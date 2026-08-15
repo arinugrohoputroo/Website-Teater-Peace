@@ -175,7 +175,7 @@ def upload_proof(request, order_number):
         order.save(update_fields=['status', 'updated_at'])
 
         request.session['notify_wa_url'] = _build_admin_wa_url(order, payment)
-        messages.success(request, 'Bukti transfer berhasil diupload. Notifikasi WhatsApp sedang dibuka.')
+        messages.success(request, 'Bukti transfer berhasil diunggah. Data Anda sudah tersimpan dan sedang diverifikasi panitia.')
         return redirect('public_order:order_confirm', order_number=order_number)
 
     return render(request, 'public/upload_proof.html', {'order': order})
