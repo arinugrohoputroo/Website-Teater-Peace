@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Cek Status Order — {{ event_name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex flex-col">
+    {% include 'public/_nav.html' %}
+
+    <main class="flex-1 max-w-lg mx-auto w-full px-4 py-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Cek Status Order</h1>
+
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg text-sm bg-red-50 text-red-800 border border-red-200">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Order</label>
+                    <input type="text" name="order_number" required placeholder="TP-ON-000001"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none transition-colors font-mono">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
+                    <input type="tel" name="phone" required placeholder="08xxxxxxxxxx"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none transition-colors">
+                </div>
+                <button type="submit" class="w-full py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors">
+                    Cek Status
+                </button>
+            </form>
+        </div>
+
+        {% if order %}
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+            <div class="text-center mb-4">
+                <p class="text-sm text-gray-500">Nomor Order</p>
+                <p class="text-2xl font-bold text-primary-800 font-mono">{{ order.order_number }}</p>
+            </div>
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Nama</span>
+                    <span class="font-medium">{{ order.buyer_name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Jumlah Tiket</span>
+                    <span>{{ order.quantity }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Total</span>
+                    <span class="font-bold">Rp {{ order.total_amount|floatformat:0 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Channel</span>
+                    <span>{{ order.channel }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Status</span>
+                    <span class="px-2 py-0.5 rounded-full text-xs
+                        {% if order.status == 'PAID' %}bg-green-100 text-green-700
+                        {% elif order.status == 'WAITING_VERIFICATION' %}bg-yellow-100 text-yellow-700
+                        {% elif order.status == 'REJECTED' %}bg-red-100 text-red-700
+                        {% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                {% with payment=order.payments.all.0 %}
+                {% if payment and payment.proof_submitted_at %}
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Waktu Bayar</span>
+                    <span>{{ payment.proof_submitted_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                {% endif %}
+                {% endwith %}
+                {% if order.tickets.exists %}
+                <div class="border-t border-gray-100 pt-4 mt-3 space-y-3">
+                    <p class="text-gray-500 font-medium">ID Tiket:</p>
+                    {% for ticket in order.tickets.all %}
+                    <div class="bg-primary-50 rounded-xl p-4 text-center">
+                        <p class="text-xs text-primary-600">ID TIKET</p>
+                        <p class="text-3xl font-bold font-mono text-primary-800">{{ ticket.ticket_number }}</p>
+                        <p class="text-sm text-gray-600 mt-1">{{ ticket.ticket_type.name }} · {{ ticket.sales_channel }}</p>
+                        <p class="text-xs mt-2">
+                            {{ ticket.get_status_display }} · {{ ticket.get_collection_status_display }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if order.status == 'WAITING_PAYMENT' or order.status == 'PENDING' %}
+            <a href="{% url 'public_order:upload_proof' order_number=order.order_number %}" class="block w-full mt-4 py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors text-center">
+                Upload Bukti Transfer
+            </a>
+            {% endif %}
+            <a href="{% url 'public_order:receipt' order.order_number %}?p={{ order.buyer_phone|urlencode }}&print=1" class="block w-full mt-3 py-3 bg-white border border-gray-200 text-gray-800 rounded-xl font-medium hover:bg-gray-50 transition-colors text-center">
+                Unduh Struk Pembelian
+            </a>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

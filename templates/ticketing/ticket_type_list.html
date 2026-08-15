@@ -1,0 +1,64 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Jenis Tiket — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Jenis Tiket</h1>
+        <p class="text-gray-500 mt-1">Kelola season, harga, bundling, dan kuota.</p>
+    </div>
+    <a href="{% url 'ticketing:ticket_type_add' %}" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">+ Tambah</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500">
+                <tr>
+                    <th class="px-4 py-3 text-left">Nama</th>
+                    <th class="px-4 py-3 text-left">1 Tiket</th>
+                    <th class="px-4 py-3 text-left">2 Tiket</th>
+                    <th class="px-4 py-3 text-left">Kuota</th>
+                    <th class="px-4 py-3 text-left">Terjual</th>
+                    <th class="px-4 py-3 text-left">Sisa</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-left">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for tt in ticket_types %}
+                <tr>
+                    <td class="px-4 py-3 font-medium">{{ tt.name }}</td>
+                    <td class="px-4 py-3">Rp {{ tt.price|floatformat:0 }}</td>
+                    <td class="px-4 py-3">Rp {{ tt.bundle_price|floatformat:0 }}</td>
+                    <td class="px-4 py-3">{{ tt.quota }}</td>
+                    <td class="px-4 py-3">{{ tt.sold }}</td>
+                    <td class="px-4 py-3 font-semibold {% if tt.quota|add:'-'|add:tt.sold <= 0 %}text-red-600{% else %}text-green-700{% endif %}">
+                        {% widthratio tt.quota 1 1 as q %}{{ tt.quota|add:"-"|add:tt.sold }}
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded-full text-xs {% if tt.active %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-600{% endif %}">
+                            {% if tt.active %}Aktif{% else %}Nonaktif{% endif %}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-2">
+                            <a href="{% url 'ticketing:ticket_type_edit' tt.pk %}" class="text-primary-700">Edit</a>
+                            <form method="post" action="{% url 'ticketing:ticket_type_toggle' tt.pk %}" class="inline">{% csrf_token %}
+                                <button type="submit" class="text-orange-700">{% if tt.active %}Off{% else %}On{% endif %}</button>
+                            </form>
+                            <form method="post" action="{% url 'ticketing:ticket_type_delete' tt.pk %}" class="inline" onsubmit="return confirm('Hapus {{ tt.name }}?')">{% csrf_token %}
+                                <button type="submit" class="text-red-700">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Belum ada jenis tiket.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

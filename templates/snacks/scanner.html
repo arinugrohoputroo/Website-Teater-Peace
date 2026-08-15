@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Snack Scanner — {{ event_name }}{% endblock %}
+
+{% block body %}
+<style>
+    #camera-frame.state-scanning { border-color: #facc15; box-shadow: inset 0 0 0 2px rgba(250, 204, 21, 0.35); }
+    #camera-frame.state-processing { border-color: #fb923c; box-shadow: inset 0 0 0 2px rgba(251, 146, 60, 0.35); }
+    #camera-frame.state-success { border-color: #22c55e; box-shadow: inset 0 0 0 3px rgba(34, 197, 94, 0.45); }
+    #camera-frame.state-duplicate,
+    #camera-frame.state-error { border-color: #ef4444; box-shadow: inset 0 0 0 3px rgba(239, 68, 68, 0.45); }
+    #camera-frame.state-idle { border-color: rgba(255,255,255,0.15); }
+    #camera-status-box.box-scanning { background: rgba(234, 179, 8, 0.92); border-color: #fde047; color: #422006; }
+    #camera-status-box.box-processing { background: rgba(249, 115, 22, 0.92); border-color: #fdba74; color: #431407; }
+    #camera-status-box.box-success { background: rgba(34, 197, 94, 0.92); border-color: #86efac; color: #052e16; }
+    #camera-status-box.box-duplicate,
+    #camera-status-box.box-error { background: rgba(239, 68, 68, 0.92); border-color: #fca5a5; color: #450a0a; }
+</style>
+
+<div class="min-h-screen bg-gray-900 text-white flex flex-col">
+    <header class="px-4 py-3 flex items-center justify-between border-b border-gray-800">
+        <a href="{% url 'snacks:list' %}" class="text-sm text-gray-300 hover:text-white">← Kembali</a>
+        <h1 class="text-lg font-bold">Snack Scanner</h1>
+        <span id="camera-indicator" class="text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">Kamera Off</span>
+    </header>
+
+    <main class="flex-1 flex flex-col px-4 py-4 max-w-lg mx-auto w-full">
+        <label class="text-sm text-gray-400 mb-1">Session</label>
+        <select id="session-select" class="w-full mb-4 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white text-base">
+            {% for session in sessions %}
+            <option value="{{ session.pk }}">{{ session.name }}</option>
+            {% empty %}
+            <option value="">Tidak ada sesi aktif</option>
+            {% endfor %}
+        </select>
+
+        <div class="relative rounded-2xl overflow-hidden bg-black aspect-square mb-4" id="camera-wrapper">
+            <div id="qr-reader" class="w-full h-full"></div>
+            <div id="camera-frame" class="absolute inset-0 pointer-events-none z-10 border-4 border-transparent rounded-2xl transition-all duration-200 state-idle"></div>
+            <div id="camera-status-overlay" class="absolute inset-0 pointer-events-none z-20 flex flex-col items-center justify-between p-3">
+                <div id="camera-status-box" class="hidden w-full rounded-xl px-4 py-3 text-center border-2 shadow-2xl backdrop-blur-sm">
+                    <p id="camera-status-icon" class="text-2xl leading-none mb-1"></p>
+                    <p id="camera-status-title" class="text-base font-bold leading-tight"></p>
+                    <p id="camera-status-detail" class="text-xs mt-1 opacity-90 leading-snug"></p>
+                </div>
+                <div id="camera-status-hint" class="w-full rounded-lg bg-black/55 px-3 py-2 text-center text-xs text-yellow-200 border border-yellow-400/40 hidden">
+                    Arahkan QR ID Card ke area kamera
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-3">
+            <button id="btn-start-camera" type="button" class="flex-1 py-3 bg-primary-600 rounded-xl font-medium hover:bg-primary-700">Aktifkan Kamera</button>
+            <button id="btn-stop-camera" type="button" class="flex-1 py-3 bg-gray-700 rounded-xl font-medium hover:bg-gray-600" disabled>Matikan</button>
+        </div>
+
+        <button id="btn-torch" type="button" class="hidden w-full py-3 mb-4 bg-amber-600 rounded-xl font-medium hover:bg-amber-500">🔦 Nyalakan Lampu</button>
+        <p id="torch-unsupported" class="hidden text-xs text-center text-gray-500 mb-4">Lampu kamera tidak didukung perangkat ini.</p>
+
+        <div id="status-bar" class="text-center py-3 px-4 rounded-xl bg-gray-800">
+            <p id="status-text" class="text-sm font-medium">Menunggu QR...</p>
+            <p id="status-sub" class="text-xs text-gray-400 mt-1">Status: IDLE</p>
+        </div>
+    </main>
+</div>
+
+<script>
+    window.SNACK_SCANNER = {
+        processUrl: "{% url 'snacks:api_scan' %}",
+        csrfToken: "{{ csrf_token }}",
+    };
+</script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{% static 'js/snack_scanner.js' %}"></script>
+{% endblock %}

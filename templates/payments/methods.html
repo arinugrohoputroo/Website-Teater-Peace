@@ -1,0 +1,50 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Metode Pembayaran — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Metode Pembayaran</h1>
+        <p class="text-gray-500 mt-1">Kelola rekening bank, QRIS, dan instruksi pembayaran.</p>
+    </div>
+    <a href="{% url 'payments:method_add' %}" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">+ Tambah</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {% for method in methods %}
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <p class="font-semibold text-gray-900">{{ method.name }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ method.get_type_display }}</p>
+                {% if method.account_number %}
+                <p class="text-sm text-gray-600 mt-2 font-mono">{{ method.account_number }}</p>
+                <p class="text-sm text-gray-500">a.n. {{ method.account_name }}</p>
+                {% endif %}
+                {% if method.instructions %}
+                <p class="text-xs text-gray-400 mt-2">{{ method.instructions }}</p>
+                {% endif %}
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs shrink-0 {% if method.active %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-600{% endif %}">
+                {% if method.active %}Aktif{% else %}Nonaktif{% endif %}
+            </span>
+        </div>
+        {% if method.qr_image %}
+        <img src="{{ method.qr_image.url }}" alt="QRIS {{ method.name }}" class="mt-4 max-h-40 rounded-lg border border-gray-100">
+        {% endif %}
+        <div class="flex flex-wrap gap-2 mt-4">
+            <a href="{% url 'payments:method_edit' method.pk %}" class="text-sm text-primary-700 hover:text-primary-900">Edit</a>
+            <form method="post" action="{% url 'payments:method_toggle' method.pk %}" class="inline">{% csrf_token %}
+                <button type="submit" class="text-sm text-orange-700 hover:text-orange-900">{% if method.active %}Nonaktifkan{% else %}Aktifkan{% endif %}</button>
+            </form>
+            <form method="post" action="{% url 'payments:method_delete' method.pk %}" class="inline" onsubmit="return confirm('Hapus {{ method.name }}?')">{% csrf_token %}
+                <button type="submit" class="text-sm text-red-700 hover:text-red-900">Hapus</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full bg-white rounded-2xl p-10 border border-gray-100 text-center text-gray-400">Belum ada metode pembayaran.</div>
+    {% endfor %}
+</div>
+{% endblock %}

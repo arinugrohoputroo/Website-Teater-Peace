@@ -1,0 +1,65 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}ID Tiket {{ ticket.ticket_number }} — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl">
+    <a href="{% url 'ticketing:tickets' %}" class="text-sm text-gray-500 hover:text-gray-700">&larr; Kembali</a>
+
+    <div class="mt-4 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-primary-700 text-white px-6 py-8 text-center">
+            <p class="text-sm tracking-widest uppercase opacity-80">Ticket Teater Peace</p>
+            <p class="text-sm mt-4 opacity-90">ID TIKET</p>
+            <p class="text-6xl font-bold font-mono tracking-wider mt-2">{{ ticket.ticket_number }}</p>
+            <p class="mt-4 text-lg">{{ ticket.ticket_type.name }}</p>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-500">Order</p>
+                    <a href="{% url 'ticketing:order_detail' ticket.order.order_number %}" class="font-mono font-semibold text-primary-700 hover:underline">{{ ticket.order.order_number }}</a>
+                </div>
+                <div>
+                    <p class="text-gray-500">Nama</p>
+                    <p class="font-semibold">{{ ticket.participant.name|default:ticket.order.buyer_name }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">WhatsApp</p>
+                    <p>{{ ticket.order.buyer_phone }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">QR Token</p>
+                    <p class="font-mono text-xs break-all">{{ ticket.qr_token }}</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-2">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">PAYMENT: {{ ticket.payment_status_display }}</span>
+                <span class="px-3 py-1 rounded-full text-xs font-medium {% if ticket.sales_channel == 'ONLINE' %}bg-blue-100 text-blue-700{% else %}bg-indigo-100 text-indigo-700{% endif %}">CHANNEL: {{ ticket.sales_channel }}</span>
+                <span class="px-3 py-1 rounded-full text-xs font-medium {% if ticket.collection_status == 'COLLECTED' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">COLLECTION: {{ ticket.get_collection_status_display|upper }}</span>
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">STATUS: {{ ticket.get_status_display|upper }}</span>
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">SEASON: {{ ticket.ticket_type.name|upper }}</span>
+            </div>
+
+            {% if ticket.collection_status == 'COLLECTED' %}
+            <div class="text-sm text-gray-500 border-t border-gray-100 pt-4">
+                Diambil: {{ ticket.collected_at }}{% if ticket.collected_by %} · oleh {{ ticket.collected_by.name }}{% endif %}
+            </div>
+            {% endif %}
+
+            {% if ticket.collection_status == 'NOT_COLLECTED' and ticket.status != 'CANCELLED' %}
+            <form method="post" action="{% url 'ticketing:collection' %}" class="pt-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="collect">
+                <input type="hidden" name="ticket_id" value="{{ ticket.pk }}">
+                <input type="hidden" name="ticket_number" value="{{ ticket.ticket_number }}">
+                <input type="hidden" name="q" value="{{ ticket.ticket_number }}">
+                <button type="submit" class="w-full py-4 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600">
+                    Serahkan Tiket Fisik
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

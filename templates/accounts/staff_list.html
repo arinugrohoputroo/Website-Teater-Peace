@@ -1,0 +1,77 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Panitia — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Daftar Panitia</h1>
+        <p class="text-gray-500 mt-1">{{ staff_list.count }} anggota terdaftar</p>
+    </div>
+    <a href="{% url 'accounts:staff_add' %}" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+        + Tambah Panitia
+    </a>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-100 text-left">
+                    <th class="px-6 py-4 font-medium text-gray-500">Nama</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Username</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Role</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Status</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Permission</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for staff in staff_list %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium">{{ staff.name }}</td>
+                    <td class="px-6 py-4 text-gray-500 font-mono text-xs">{{ staff.username }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-0.5 rounded-full text-xs {% if staff.is_admin %}bg-purple-100 text-purple-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                            {{ staff.get_role_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-0.5 rounded-full text-xs {% if staff.is_active %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                            {% if staff.is_active %}Aktif{% else %}Nonaktif{% endif %}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500 text-xs">
+                        {% for perm in staff.staff_permissions.all %}
+                            <span class="inline-block bg-gray-100 rounded px-1.5 py-0.5 mr-1 mb-1">{{ perm.get_module_display }}</span>
+                        {% empty %}
+                            {% if staff.is_admin %}<span class="text-purple-600">Full Access</span>{% else %}-{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <a href="{% url 'accounts:staff_edit' staff.pk %}" class="text-primary-600 hover:text-primary-800 text-xs">Edit</a>
+                            <a href="{% url 'accounts:staff_permissions' staff.pk %}" class="text-primary-600 hover:text-primary-800 text-xs">Permission</a>
+                            {% if not staff.is_admin or staff.pk != request.user.pk %}
+                            <form method="post" action="{% url 'accounts:staff_toggle' staff.pk %}" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" class="text-xs {% if staff.is_active %}text-orange-600 hover:text-orange-800{% else %}text-green-600 hover:text-green-800{% endif %}">
+                                    {% if staff.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
+                                </button>
+                            </form>
+                            {% if staff.role == 'STAFF' %}
+                            <form method="post" action="{% url 'accounts:staff_delete' staff.pk %}" class="inline" onsubmit="return confirm('Hapus {{ staff.name }} dari panitia?')">
+                                {% csrf_token %}
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-xs">Hapus</button>
+                            </form>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

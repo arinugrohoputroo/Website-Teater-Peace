@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-h-full flex" id="app">
+    <header class="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100" aria-label="Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <span class="font-bold text-primary-800 truncate">{{ event_name }}</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-xs font-bold text-primary-700">
+            {{ request.user.name|truncatechars:1 }}
+        </div>
+    </header>
+
+    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-200 flex flex-col pt-14">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <p class="text-xs text-gray-500">Panel</p>
+            <p class="text-sm font-medium text-gray-900 truncate">{{ request.user.name }}</p>
+        </div>
+
+        <nav class="flex-1 p-2 overflow-y-auto">
+            <a href="{% url 'dashboard:index' %}" class="sidebar-link {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+
+            <p class="px-3 pt-3 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Tiket</p>
+            <a href="{% url 'ticketing:list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'order_detail' %}active{% endif %}">Order</a>
+            <a href="{% url 'ticketing:offline_sale' %}" class="sidebar-link {% if request.resolver_match.url_name == 'offline_sale' %}active{% endif %}">Offline</a>
+            <a href="{% url 'ticketing:tickets' %}" class="sidebar-link {% if request.resolver_match.url_name == 'tickets' or request.resolver_match.url_name == 'ticket_detail' %}active{% endif %}">ID Tiket</a>
+            <a href="{% url 'ticketing:collection' %}" class="sidebar-link {% if request.resolver_match.url_name == 'collection' %}active{% endif %}">Collection</a>
+            <a href="{% url 'checkin:scan' %}" class="sidebar-link {% if request.resolver_match.app_name == 'checkin' %}active{% endif %}">Check-in</a>
+
+            <p class="px-3 pt-3 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Keuangan</p>
+            <a href="{% url 'payments:list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'payments' and request.resolver_match.url_name == 'list' %}active{% endif %}">Pembayaran</a>
+
+            <p class="px-3 pt-3 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Snack</p>
+            <a href="{% url 'snacks:list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'snacks' and 'committee' not in request.path %}active{% endif %}">Sesi & Scanner</a>
+            {% if request.user.is_admin %}
+            <a href="{% url 'snacks:committee_list' %}" class="sidebar-link {% if 'committee' in request.path %}active{% endif %}">Panitia</a>
+            {% endif %}
+
+            <a href="{% url 'reports:index' %}" class="sidebar-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %} mt-2">Laporan</a>
+
+            {% if request.user.is_admin %}
+            <p class="px-3 pt-3 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Pengaturan</p>
+            <a href="{% url 'ticketing:ticket_types' %}" class="sidebar-link {% if 'ticket-types' in request.path %}active{% endif %}">Jenis Tiket</a>
+            <a href="{% url 'payments:methods' %}" class="sidebar-link {% if 'methods' in request.path %}active{% endif %}">Metode Bayar</a>
+            <a href="{% url 'accounts:staff_list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'accounts' %}active{% endif %}">Staff</a>
+            {% endif %}
+        </nav>
+
+        <div class="p-2 border-t border-gray-100">
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="block w-full text-center text-sm text-red-600 hover:text-red-800 py-2 rounded-lg hover:bg-red-50">Logout</button>
+            </form>
+        </div>
+    </aside>
+
+    <main id="main-content" class="flex-1 min-w-0 w-full mt-14 transition-all duration-200">
+        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+            {% if messages %}
+            <div class="mb-4 space-y-2">
+                {% for message in messages %}
+                <div class="p-3 rounded-lg text-sm {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</div>
+
+<script>
+const SIDEBAR_KEY = 'tp_panel_sidebar';
+function isDesktop() { return window.matchMedia('(min-width: 1024px)').matches; }
+function setSidebarOpen(open) {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const main = document.getElementById('main-content');
+    if (open) {
+        sidebar.classList.remove('-translate-x-full');
+        if (!isDesktop()) overlay.classList.remove('hidden');
+        if (isDesktop()) main.classList.add('lg:ml-64');
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        main.classList.remove('lg:ml-64');
+    }
+    localStorage.setItem(SIDEBAR_KEY, open ? 'open' : 'closed');
+}
+function toggleSidebar() {
+    setSidebarOpen(document.getElementById('sidebar').classList.contains('-translate-x-full'));
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem(SIDEBAR_KEY);
+    setSidebarOpen(saved === null ? isDesktop() : saved === 'open');
+});
+window.addEventListener('resize', () => {
+    if (localStorage.getItem(SIDEBAR_KEY) !== 'closed') setSidebarOpen(isDesktop());
+});
+</script>
+{% endblock %}

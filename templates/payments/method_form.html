@@ -1,0 +1,52 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}{{ form_title }} — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-xl">
+    <a href="{% url 'payments:methods' %}" class="text-sm text-gray-500 hover:text-gray-700">&larr; Kembali</a>
+    <h1 class="text-2xl font-bold text-gray-900 mt-2 mb-6">{{ form_title }}</h1>
+
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <form method="post" enctype="multipart/form-data" class="space-y-5">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                <input type="text" name="name" required value="{{ method.name|default:'' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipe</label>
+                <select name="type" class="w-full px-4 py-3 rounded-xl border border-gray-200">
+                    {% for value, label in types %}
+                    <option value="{{ value }}" {% if method and method.type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">No. Rekening / ID</label>
+                <input type="text" name="account_number" value="{{ method.account_number|default:'' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Atas Nama</label>
+                <input type="text" name="account_name" value="{{ method.account_name|default:'' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Foto QRIS</label>
+                <input type="file" name="qr_image" accept="image/*" class="w-full text-sm">
+                {% if method.qr_image %}
+                <img src="{{ method.qr_image.url }}" alt="QR saat ini" class="mt-3 max-h-36 rounded-lg border border-gray-100">
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Instruksi</label>
+                <textarea name="instructions" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200">{{ method.instructions|default:'' }}</textarea>
+            </div>
+            <label class="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="active" {% if method is None or method.active %}checked{% endif %}>
+                Aktif
+            </label>
+            <button type="submit" class="w-full py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700">Simpan</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

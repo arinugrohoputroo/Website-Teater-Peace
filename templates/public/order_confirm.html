@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Order {{ order.order_number }} — {{ event_name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex flex-col">
+    {% include 'public/_nav.html' %}
+
+    <main class="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg text-sm bg-green-50 text-green-800 border border-green-200">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
+            <div class="text-center mb-6">
+                <div class="text-4xl mb-3">✅</div>
+                <h1 class="text-2xl font-bold text-gray-900">Order Dibuat</h1>
+                <p class="text-gray-500 mt-1">Simpan nomor order Anda</p>
+            </div>
+
+            <div class="bg-primary-50 rounded-xl p-4 text-center mb-6">
+                <p class="text-sm text-primary-600 mb-1">Nomor Order</p>
+                <p class="text-3xl font-bold text-primary-800 font-mono">{{ order.order_number }}</p>
+            </div>
+
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Nama</span>
+                    <span class="font-medium">{{ order.buyer_name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">WhatsApp</span>
+                    <span>{{ order.buyer_phone }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Total</span>
+                    <span class="font-bold text-lg">Rp {{ order.total_amount|floatformat:0 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Channel</span>
+                    <span class="font-medium">{{ order.channel }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Status</span>
+                    <span class="px-2 py-0.5 rounded-full text-xs
+                        {% if order.status == 'PAID' %}bg-green-100 text-green-700
+                        {% elif order.status == 'WAITING_VERIFICATION' %}bg-yellow-100 text-yellow-700
+                        {% elif order.status == 'REJECTED' %}bg-red-100 text-red-700
+                        {% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                {% if payment and payment.proof_submitted_at %}
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Waktu Pembayaran</span>
+                    <span class="font-medium">{{ payment.proof_submitted_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if payment_method %}
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
+            <h2 class="font-semibold text-lg mb-4">Instruksi Pembayaran</h2>
+            <div class="bg-gray-50 rounded-xl p-4">
+                <p class="font-medium text-lg mb-2">{{ payment_method.name }}</p>
+                {% if payment_method.account_number %}
+                <p class="text-gray-600">No. Rekening: <span class="font-mono font-bold">{{ payment_method.account_number }}</span></p>
+                <p class="text-gray-600">Atas Nama: <span class="font-medium">{{ payment_method.account_name }}</span></p>
+                {% endif %}
+                {% if payment_method.qr_image %}
+                <div class="mt-4">
+                    <img src="{{ payment_method.qr_image.url }}" alt="QRIS" class="max-w-xs mx-auto rounded-lg">
+                </div>
+                {% endif %}
+                {% if payment_method.instructions %}
+                <p class="text-sm text-gray-500 mt-3">{{ payment_method.instructions }}</p>
+                {% endif %}
+            </div>
+            <p class="text-sm text-gray-500 mt-3">Transfer sebesar <strong>Rp {{ order.total_amount|floatformat:0 }}</strong></p>
+        </div>
+        {% endif %}
+
+        {% if order.tickets.exists %}
+        <div class="space-y-4 mb-6">
+            <h2 class="font-semibold text-lg">ID Tiket Anda</h2>
+            {% for ticket in order.tickets.all %}
+            <div class="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-hidden">
+                <div class="bg-primary-700 text-white px-6 py-6 text-center">
+                    <p class="text-xs tracking-widest uppercase opacity-80">Ticket Teater Peace</p>
+                    <p class="text-sm mt-3 opacity-90">ID TIKET</p>
+                    <p class="text-5xl font-bold font-mono tracking-wider mt-1">{{ ticket.ticket_number }}</p>
+                    <p class="mt-3">{{ ticket.ticket_type.name }}</p>
+                </div>
+                <div class="p-4 text-sm space-y-2">
+                    <div class="flex justify-between"><span class="text-gray-500">Channel</span><span>{{ ticket.sales_channel }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Status</span><span>{{ ticket.get_status_display }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Collection</span><span>{{ ticket.get_collection_status_display }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Order</span><span class="font-mono text-xs">{{ order.order_number }}</span></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if order.status == 'WAITING_PAYMENT' or order.status == 'PENDING' %}
+        <a href="{% url 'public_order:upload_proof' order_number=order.order_number %}" class="block w-full py-4 bg-primary-600 text-white rounded-xl font-semibold text-lg hover:bg-primary-700 transition-colors text-center">
+            Upload Bukti Transfer
+        </a>
+        {% endif %}
+
+        {% if can_download_receipt %}
+        <a href="{% url 'public_order:receipt' order.order_number %}?p={{ order.buyer_phone|urlencode }}&print=1" class="mt-3 block w-full py-4 bg-white border border-gray-200 text-gray-800 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-colors text-center">
+            Unduh Struk Pembelian
+        </a>
+        {% endif %}
+
+        <div class="mt-6 text-center">
+            <a href="{% url 'core:home' %}" class="text-sm text-gray-500 hover:text-gray-700">&larr; Kembali ke Beranda</a>
+        </div>
+    </main>
+</div>
+
+{% if notify_wa_url %}
+<div class="mb-4 p-4 rounded-xl bg-green-50 border border-green-200 text-sm text-green-800">
+    Notifikasi WhatsApp ke panitia akan dibuka otomatis.
+    <a href="{{ notify_wa_url }}" target="_blank" rel="noopener" class="font-semibold underline ml-1">Kirim manual jika tidak terbuka</a>
+</div>
+<script>
+(function () {
+    const url = "{{ notify_wa_url|escapejs }}";
+    setTimeout(function () { window.location.href = url; }, 400);
+})();
+</script>
+{% endif %}
+{% endblock %}

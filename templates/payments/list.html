@@ -1,0 +1,89 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Pembayaran — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Pembayaran</h1>
+        <p class="text-gray-500 mt-1">Verifikasi pembayaran online dan offline.</p>
+    </div>
+    <a href="{% url 'payments:methods' %}" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+        Metode Pembayaran
+    </a>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-100 text-left">
+                    <th class="px-6 py-4 font-medium text-gray-500">Order</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Pembeli</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Metode</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Nominal</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Status</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Bukti</th>
+                    <th class="px-6 py-4 font-medium text-gray-500">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for payment in payments %}
+                <tr class="hover:bg-gray-50 align-top">
+                    <td class="px-6 py-4">
+                        <div class="font-medium">{{ payment.order.order_number }}</div>
+                        <div class="text-xs text-gray-500">{{ payment.order.get_channel_display }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-medium">{{ payment.order.buyer_name }}</div>
+                        <div class="text-xs text-gray-500">{{ payment.order.buyer_phone }}</div>
+                    </td>
+                    <td class="px-6 py-4">{{ payment.payment_method.name|default:'-' }}</td>
+                    <td class="px-6 py-4 font-semibold">Rp {{ payment.amount|floatformat:0 }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-0.5 rounded-full text-xs
+                            {% if payment.status == 'VERIFIED' %}bg-green-100 text-green-700
+                            {% elif payment.status == 'REJECTED' %}bg-red-100 text-red-700
+                            {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                            {{ payment.get_status_display }}
+                        </span>
+                        {% if payment.rejection_reason %}
+                        <p class="text-xs text-red-600 mt-2">{{ payment.rejection_reason }}</p>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if payment.proof_file %}
+                        <a href="{{ payment.proof_file.url }}" target="_blank" class="text-primary-600 hover:text-primary-800">Lihat</a>
+                        {% else %}
+                        <span class="text-gray-400">Belum ada</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if payment.status == 'PENDING' %}
+                        <div class="flex flex-col gap-2 min-w-[180px]">
+                            <a href="{% url 'payments:verify' payment.pk %}" class="w-full text-center px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700 transition-colors">
+                                Approve
+                            </a>
+                            <form method="post" action="{% url 'payments:reject' payment.pk %}" class="space-y-2">
+                                {% csrf_token %}
+                                <input type="text" name="reason" placeholder="Alasan penolakan" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs">
+                                <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700 transition-colors">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <span class="text-gray-400 text-xs">Selesai</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center text-gray-400">Belum ada data.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

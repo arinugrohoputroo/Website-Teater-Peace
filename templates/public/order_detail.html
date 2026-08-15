@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Detail Order — {{ event_name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-2xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">Detail Order</h1>
+            <p class="text-sm text-gray-500 mb-4 font-mono">{{ order.order_number }}</p>
+            <div class="space-y-2 text-sm">
+                <p><span class="text-gray-500">Nama:</span> {{ order.buyer_name }}</p>
+                <p><span class="text-gray-500">WhatsApp:</span> {{ order.buyer_phone }}</p>
+                <p><span class="text-gray-500">Channel:</span> {{ order.channel }}</p>
+                <p><span class="text-gray-500">Status:</span> {{ order.get_status_display }}</p>
+                <p><span class="text-gray-500">Jumlah:</span> {{ order.quantity }}</p>
+                <p><span class="text-gray-500">Total:</span> Rp {{ order.total_amount|floatformat:0 }}</p>
+                {% if payment %}
+                <p><span class="text-gray-500">Pembayaran:</span> {{ payment.get_status_display }}</p>
+                {% if payment.proof_submitted_at %}
+                <p><span class="text-gray-500">Waktu Bayar:</span> {{ payment.proof_submitted_at|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+                {% endif %}
+            </div>
+            <a href="{% url 'public_order:receipt' order.order_number %}?p={{ order.buyer_phone|urlencode }}&print=1" class="inline-block mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium">Unduh Struk</a>
+        </div>
+
+        <div class="space-y-4">
+            <h2 class="font-semibold">ID Tiket</h2>
+            {% for ticket in tickets %}
+            <div class="bg-white rounded-2xl border border-primary-100 overflow-hidden shadow-sm">
+                <div class="bg-primary-700 text-white px-6 py-5 text-center">
+                    <p class="text-xs opacity-80">ID TIKET</p>
+                    <p class="text-4xl font-bold font-mono">{{ ticket.ticket_number }}</p>
+                    <p class="mt-2 text-sm">{{ ticket.ticket_type.name }}</p>
+                </div>
+                <div class="p-4 text-sm flex justify-between">
+                    <span>{{ ticket.sales_channel }} · {{ ticket.get_collection_status_display }}</span>
+                    <span>{{ ticket.get_status_display }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-sm text-gray-400">Tiket belum diterbitkan.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

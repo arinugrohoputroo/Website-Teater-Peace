@@ -1,0 +1,31 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Check-in — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Check-in</h1>
+            <p class="text-gray-500 mt-1">Scan QR token atau masukkan ID Tiket. Terpisah dari collection.</p>
+        </div>
+        <a href="{% url 'checkin:history' %}" class="text-sm px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">Riwayat</a>
+    </div>
+
+    {% include 'components/scanner_form.html' with show_ticket_number=True button_label='Validasi Check-in' token_label='QR Token' token_placeholder='Tempel QR token unik' %}
+
+    {% if result %}
+    <div class="mt-6 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500">ID TIKET</p>
+        <p class="text-4xl font-bold font-mono text-primary-800 mb-4">{{ result.ticket_number }}</p>
+        <div class="space-y-2 text-sm">
+            <p><span class="text-gray-500">Nama:</span> {{ result.participant.name }}</p>
+            <p><span class="text-gray-500">Season:</span> {{ result.ticket_type.name }}</p>
+            <p><span class="text-gray-500">Channel:</span> {{ result.sales_channel }}</p>
+            <p><span class="text-gray-500">Collection:</span> {{ result.get_collection_status_display }}</p>
+            <p><span class="text-gray-500">Check-in Status:</span> {% if result.status == 'USED' %}CHECKED-IN{% else %}NOT CHECKED-IN{% endif %}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Struk {{ order.order_number }} — {{ event_name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+@media print {
+    .no-print { display: none !important; }
+    body { background: white !important; }
+}
+.receipt-card {
+    max-width: 420px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="no-print max-w-md mx-auto mb-4 flex gap-2">
+        <button onclick="window.print()" class="flex-1 py-3 bg-primary-600 text-white rounded-xl font-semibold">Unduh / Cetak Struk</button>
+        <a href="{% url 'public_order:order_confirm' order.order_number %}" class="px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm">Kembali</a>
+    </div>
+
+    <div class="receipt-card" id="receipt">
+        <div class="text-center border-b border-dashed border-gray-200 pb-4 mb-4">
+            <p class="text-xs tracking-widest uppercase text-gray-400">Struk Pembelian</p>
+            <h1 class="text-xl font-bold text-gray-900 mt-1">{{ event_name }}</h1>
+            <p class="font-mono text-sm text-primary-700 mt-2">{{ order.order_number }}</p>
+        </div>
+
+        <div class="space-y-2 text-sm mb-4">
+            <div class="flex justify-between gap-3"><span class="text-gray-500">Nama</span><span class="font-medium text-right">{{ order.buyer_name }}</span></div>
+            <div class="flex justify-between gap-3"><span class="text-gray-500">WhatsApp</span><span class="text-right">{{ order.buyer_phone }}</span></div>
+            <div class="flex justify-between gap-3"><span class="text-gray-500">Channel</span><span>{{ order.get_channel_display }}</span></div>
+            <div class="flex justify-between gap-3"><span class="text-gray-500">Status</span><span>{{ order.get_status_display }}</span></div>
+            {% if payment and payment.proof_submitted_at %}
+            <div class="flex justify-between gap-3"><span class="text-gray-500">Waktu Bayar</span><span>{{ payment.proof_submitted_at|date:"d/m/Y H:i" }}</span></div>
+            {% else %}
+            <div class="flex justify-between gap-3"><span class="text-gray-500">Dibuat</span><span>{{ order.created_at|date:"d/m/Y H:i" }}</span></div>
+            {% endif %}
+            {% if payment and payment.payment_method %}
+            <div class="flex justify-between gap-3"><span class="text-gray-500">Metode</span><span>{{ payment.payment_method.name }}</span></div>
+            {% endif %}
+        </div>
+
+        <div class="border-t border-dashed border-gray-200 pt-4 mb-4">
+            <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Item</p>
+            {% for item in items %}
+            <div class="flex justify-between text-sm py-1">
+                <span>{{ item.ticket_type.name }} × {{ item.quantity }}</span>
+                <span>Rp {{ item.subtotal|floatformat:0 }}</span>
+            </div>
+            {% empty %}
+            <p class="text-sm text-gray-400">-</p>
+            {% endfor %}
+            <div class="flex justify-between text-base font-bold mt-3 pt-3 border-t border-gray-100">
+                <span>Total</span>
+                <span>Rp {{ order.total_amount|floatformat:0 }}</span>
+            </div>
+        </div>
+
+        {% if tickets %}
+        <div class="border-t border-dashed border-gray-200 pt-4">
+            <p class="text-xs font-semibold text-gray-500 uppercase mb-2">ID Tiket</p>
+            <p class="font-mono font-bold text-primary-800 text-lg tracking-wide">
+                {% for t in tickets %}{{ t.ticket_number }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </p>
+        </div>
+        {% endif %}
+
+        <p class="text-center text-xs text-gray-400 mt-6">Simpan struk ini sebagai bukti pembelian.</p>
+    </div>
+</div>
+
+{% if print_mode %}
+<script>window.addEventListener('load', () => window.print());</script>
+{% endif %}
+{% endblock %}

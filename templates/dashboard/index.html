@@ -1,0 +1,180 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Dashboard — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+    <p class="text-gray-500 mt-1">Selamat datang, {{ request.user.name }}.</p>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Total Kuota</p>
+        <p class="text-3xl font-bold text-gray-900">{{ total_tickets }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Terjual Online</p>
+        <p class="text-3xl font-bold text-blue-700">{{ online_sold }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Terjual Offline</p>
+        <p class="text-3xl font-bold text-indigo-700">{{ offline_sold }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Sisa Kuota</p>
+        <p class="text-3xl font-bold text-gray-900">{{ tickets_remaining }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Pool ID Tiket</p>
+        <p class="text-3xl font-bold text-primary-800">{{ id_pool_total }}</p>
+        <p class="text-xs text-gray-400 mt-1">Sisa ID: {{ id_pool_remaining }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Online Belum Diambil</p>
+        <p class="text-3xl font-bold text-orange-600">{{ online_not_collected }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Offline Belum Diambil</p>
+        <p class="text-3xl font-bold text-amber-600">{{ offline_not_collected }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Sudah Diambil</p>
+        <p class="text-3xl font-bold text-green-700">{{ collected }}</p>
+    </div>
+</div>
+
+<div class="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100">
+        <h2 class="font-semibold text-gray-900">Kuota per Season</h2>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500">
+                <tr>
+                    <th class="px-4 py-3 text-left">Season</th>
+                    <th class="px-4 py-3 text-left">Kuota</th>
+                    <th class="px-4 py-3 text-left">Terjual</th>
+                    <th class="px-4 py-3 text-left">Sisa</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for tt in season_stats %}
+                <tr>
+                    <td class="px-4 py-3 font-medium">{{ tt.name }}</td>
+                    <td class="px-4 py-3">{{ tt.quota }}</td>
+                    <td class="px-4 py-3">{{ tt.sold }}</td>
+                    <td class="px-4 py-3 font-semibold {% if tt.remaining <= 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ tt.remaining }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">Belum ada season.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Pendapatan</p>
+        <p class="text-2xl font-bold text-gray-900">Rp {{ revenue|floatformat:0 }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Pembayaran Pending</p>
+        <p class="text-2xl font-bold text-yellow-700">{{ pending_payments_count }}</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <p class="text-sm text-gray-500 mb-1">Cancelled</p>
+        <p class="text-2xl font-bold text-red-600">{{ cancelled }}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="font-semibold text-gray-900">Order Terbaru</h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for order in recent_orders %}
+            <a href="{% url 'ticketing:order_detail' order.order_number %}" class="px-6 py-4 flex items-start justify-between gap-4 hover:bg-gray-50 block">
+                <div>
+                    <p class="font-medium text-gray-900">{{ order.order_number }}</p>
+                    <p class="text-sm text-gray-500">{{ order.buyer_name }} · {{ order.get_channel_display }} · {{ order.quantity }} tiket</p>
+                    {% if order.tickets.exists %}
+                    <p class="text-xs font-mono text-primary-700 mt-1">ID: {% for t in order.tickets.all %}{{ t.ticket_number }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                    {% endif %}
+                </div>
+                <div class="text-right">
+                    <p class="font-semibold">Rp {{ order.total_amount|floatformat:0 }}</p>
+                    <p class="text-xs text-gray-500">{{ order.get_status_display }}</p>
+                </div>
+            </a>
+            {% empty %}
+            <div class="px-6 py-10 text-sm text-gray-400">Belum ada data.</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="font-semibold text-gray-900">Pembayaran Pending</h2>
+            <span class="text-xs text-gray-400">{{ pending_payments_count }} pending</span>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for payment in pending_payments %}
+            <div class="px-6 py-4 flex items-start justify-between gap-4">
+                <div>
+                    <p class="font-medium text-gray-900">{{ payment.order.order_number }}</p>
+                    <p class="text-sm text-gray-500">{{ payment.order.buyer_name }} · {{ payment.order.get_channel_display }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-semibold">Rp {{ payment.amount|floatformat:0 }}</p>
+                    <p class="text-xs text-yellow-700 bg-yellow-100 rounded-full px-2 py-0.5 inline-block">{{ payment.get_status_display }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="px-6 py-10 text-sm text-gray-400">Belum ada data.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if request.user.is_admin and snack_stats.total_committee %}
+<div class="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h2 class="font-semibold text-gray-900">Snack Panitia</h2>
+        <a href="{% url 'snacks:scanner' %}" class="text-sm text-primary-700 hover:text-primary-900 font-medium">Buka Scanner →</a>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 border-b border-gray-100">
+        <div>
+            <p class="text-xs text-gray-500">Total Panitia</p>
+            <p class="text-2xl font-bold">{{ snack_stats.total_committee }}</p>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500">Session Aktif</p>
+            <p class="text-2xl font-bold text-primary-700">{{ snack_stats.active_sessions }}</p>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500">Sudah Ambil</p>
+            <p class="text-2xl font-bold text-green-700">{{ snack_stats.claimed_count }}</p>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500">Belum Ambil</p>
+            <p class="text-2xl font-bold text-orange-600">{{ snack_stats.unclaimed_count }}</p>
+        </div>
+    </div>
+    <div class="divide-y divide-gray-100">
+        {% for claim in recent_snacks %}
+        <div class="px-6 py-3 flex items-center justify-between text-sm">
+            <div>
+                <p class="font-medium">{{ claim.committee_member.name }}</p>
+                <p class="text-gray-500">{{ claim.session.name }} · {{ claim.detection_method }}</p>
+            </div>
+            <p class="text-gray-500">{{ claim.claimed_at|date:"d/m H:i" }}</p>
+        </div>
+        {% empty %}
+        <div class="px-6 py-6 text-sm text-gray-400">Belum ada claim snack.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

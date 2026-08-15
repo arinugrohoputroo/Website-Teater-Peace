@@ -1,0 +1,29 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Permission {{ staff.name }} — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg">
+    <div class="mb-6">
+        <a href="{% url 'accounts:staff_list' %}" class="text-sm text-gray-500 hover:text-gray-700">&larr; Kembali</a>
+        <h1 class="text-2xl font-bold text-gray-900 mt-2">Permission</h1>
+        <p class="text-gray-500">{{ staff.name }} ({{ staff.email }})</p>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {% for value, label in all_modules %}
+            <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" name="modules" value="{{ value }}" {% if value in active_modules %}checked{% endif %}
+                    class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                <span class="font-medium">{{ label }}</span>
+            </label>
+            {% endfor %}
+            <button type="submit" class="w-full py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors mt-4">
+                Simpan Permission
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

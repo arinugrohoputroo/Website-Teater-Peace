@@ -1,0 +1,100 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Order {{ order.order_number }} — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <a href="{% url 'ticketing:list' %}" class="text-sm text-gray-500">&larr; Kembali</a>
+    <div class="mt-4 mb-6 flex items-start justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold font-mono text-gray-900">{{ order.order_number }}</h1>
+            <p class="text-gray-500">{{ order.buyer_name }} · {{ order.buyer_phone }} · {{ order.get_channel_display }}</p>
+        </div>
+        {% if request.user.is_admin and can_delete %}
+        <form method="post" action="{% url 'ticketing:order_delete' order.order_number %}" onsubmit="return confirm('Hapus order {{ order.order_number }}?')">
+            {% csrf_token %}
+            <button type="submit" class="px-4 py-2 text-sm text-red-700 border border-red-200 rounded-lg hover:bg-red-50">Hapus Order</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500">Channel</p>
+            <p class="font-semibold">{{ order.channel }}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500">Status</p>
+            <p class="font-semibold">{{ order.get_status_display }}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500">Jumlah</p>
+            <p class="font-semibold">{{ order.quantity }} tiket</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500">Total</p>
+            <p class="font-semibold">Rp {{ order.total_amount|floatformat:0 }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500">Order Dibuat</p>
+            <p class="font-semibold">{{ order.created_at|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-gray-100">
+            <p class="text-xs text-gray-500">Waktu Pembayaran (Bukti)</p>
+            <p class="font-semibold">
+                {% if payment and payment.proof_submitted_at %}
+                {{ payment.proof_submitted_at|date:"d/m/Y H:i" }}
+                {% else %}
+                —
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if payment %}
+    <div class="bg-white rounded-2xl p-4 border border-gray-100 mb-6 text-sm">
+        Pembayaran: <strong>{{ payment.get_status_display }}</strong>
+        {% if payment.payment_method %} · {{ payment.payment_method.name }}{% endif %}
+        · Rp {{ payment.amount|floatformat:0 }}
+        {% if payment.verified_at %} · Verifikasi: {{ payment.verified_at|date:"d/m/Y H:i" }}{% endif %}
+    </div>
+    {% endif %}
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 font-semibold">Tiket dalam Order</div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-100 text-left">
+                        <th class="px-4 py-3 font-medium text-gray-500">ID Ticket</th>
+                        <th class="px-4 py-3 font-medium text-gray-500">Season</th>
+                        <th class="px-4 py-3 font-medium text-gray-500">Harga</th>
+                        <th class="px-4 py-3 font-medium text-gray-500">Collection</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for ticket in tickets %}
+                    <tr>
+                        <td class="px-4 py-3">
+                            <a href="{% url 'ticketing:ticket_detail' ticket.ticket_number %}" class="font-mono text-lg font-bold text-primary-800 hover:underline">{{ ticket.ticket_number }}</a>
+                        </td>
+                        <td class="px-4 py-3">{{ ticket.ticket_type.name }}</td>
+                        <td class="px-4 py-3">Rp {{ ticket.ticket_type.price|floatformat:0 }}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 rounded-full text-xs {% if ticket.collection_status == 'COLLECTED' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                                {{ ticket.get_collection_status_display|upper }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="px-6 py-10 text-center text-gray-400">Tiket belum diterbitkan.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

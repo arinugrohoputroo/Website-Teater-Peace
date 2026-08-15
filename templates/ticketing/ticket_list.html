@@ -1,0 +1,87 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Tiket — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">ID Tiket</h1>
+        <p class="text-gray-500 mt-1">Cari dan filter semua tiket.</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{% url 'ticketing:collection' %}" class="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600">Collection</a>
+        <a href="{% url 'ticketing:offline_sale' %}" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">Offline</a>
+    </div>
+</div>
+
+<form method="get" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 space-y-3">
+    <input type="text" name="q" value="{{ q }}" placeholder="ID / Order / Nama / WhatsApp" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <select name="channel" class="px-3 py-2 rounded-xl border border-gray-200 text-sm">
+            <option value="">Channel</option>
+            <option value="ONLINE" {% if channel == 'ONLINE' %}selected{% endif %}>Online</option>
+            <option value="OFFLINE" {% if channel == 'OFFLINE' %}selected{% endif %}>Offline</option>
+        </select>
+        <select name="collection" class="px-3 py-2 rounded-xl border border-gray-200 text-sm">
+            <option value="">Collection</option>
+            <option value="NOT_COLLECTED" {% if collection == 'NOT_COLLECTED' %}selected{% endif %}>Belum diambil</option>
+            <option value="COLLECTED" {% if collection == 'COLLECTED' %}selected{% endif %}>Sudah diambil</option>
+        </select>
+        <select name="season" class="px-3 py-2 rounded-xl border border-gray-200 text-sm">
+            <option value="">Season</option>
+            {% for t in ticket_types %}
+            <option value="{{ t.pk }}" {% if season == t.pk|stringformat:'s' %}selected{% endif %}>{{ t.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="payment" class="px-3 py-2 rounded-xl border border-gray-200 text-sm">
+            <option value="">Payment</option>
+            <option value="VERIFIED" {% if payment == 'VERIFIED' %}selected{% endif %}>Lunas</option>
+            <option value="PENDING" {% if payment == 'PENDING' %}selected{% endif %}>Pending</option>
+        </select>
+    </div>
+    <button type="submit" class="px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium">Filter</button>
+</form>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500">
+                <tr>
+                    <th class="px-4 py-3 text-left">ID</th>
+                    <th class="px-4 py-3 text-left">Season</th>
+                    <th class="px-4 py-3 text-left">Channel</th>
+                    <th class="px-4 py-3 text-left">Order</th>
+                    <th class="px-4 py-3 text-left">Nama</th>
+                    <th class="px-4 py-3 text-left">Payment</th>
+                    <th class="px-4 py-3 text-left">Collection</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for ticket in tickets %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">
+                        <a href="{% url 'ticketing:ticket_detail' ticket.ticket_number %}" class="font-mono font-bold text-primary-800 hover:underline">{{ ticket.ticket_number }}</a>
+                    </td>
+                    <td class="px-4 py-3">{{ ticket.ticket_type.name }}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded-full text-xs {% if ticket.sales_channel == 'ONLINE' %}bg-blue-100 text-blue-700{% else %}bg-indigo-100 text-indigo-700{% endif %}">{{ ticket.sales_channel }}</span>
+                    </td>
+                    <td class="px-4 py-3 font-mono text-xs">
+                        <a href="{% url 'ticketing:order_detail' ticket.order.order_number %}" class="hover:underline">{{ ticket.order.order_number }}</a>
+                    </td>
+                    <td class="px-4 py-3">{{ ticket.participant.name|default:ticket.order.buyer_name }}</td>
+                    <td class="px-4 py-3 text-xs">{{ ticket.payment_status_display }}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded-full text-xs {% if ticket.collection_status == 'COLLECTED' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                            {{ ticket.get_collection_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="px-6 py-12 text-center text-gray-400">Belum ada data.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

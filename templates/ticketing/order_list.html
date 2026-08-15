@@ -1,0 +1,83 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Order — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6 gap-4 flex-wrap">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Order</h1>
+        <p class="text-gray-500 mt-1">Order ONLINE dan OFFLINE.</p>
+    </div>
+    <div class="flex gap-2 flex-wrap">
+        <a href="?channel=ONLINE" class="px-3 py-2 text-sm rounded-lg border {% if channel == 'ONLINE' %}bg-blue-50 border-blue-200{% else %}border-gray-200{% endif %}">Online</a>
+        <a href="?channel=OFFLINE" class="px-3 py-2 text-sm rounded-lg border {% if channel == 'OFFLINE' %}bg-indigo-50 border-indigo-200{% else %}border-gray-200{% endif %}">Offline</a>
+        <a href="{% url 'ticketing:list' %}" class="px-3 py-2 text-sm rounded-lg border border-gray-200">Semua</a>
+        <a href="{% url 'ticketing:offline_sale' %}" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">Offline</a>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500">
+                <tr>
+                    <th class="px-4 py-3 text-left">Order</th>
+                    <th class="px-4 py-3 text-left">Pembeli</th>
+                    <th class="px-4 py-3 text-left">Channel</th>
+                    <th class="px-4 py-3 text-left">ID Tiket</th>
+                    <th class="px-4 py-3 text-left">Waktu Bayar</th>
+                    <th class="px-4 py-3 text-left">Total</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    {% if request.user.is_admin %}<th class="px-4 py-3 text-right">Aksi</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for row in order_rows %}
+                {% with order=row.order %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">
+                        <a href="{% url 'ticketing:order_detail' order.order_number %}" class="font-mono text-xs text-primary-700 hover:underline">{{ order.order_number }}</a>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="font-medium">{{ order.buyer_name }}</div>
+                        <div class="text-xs text-gray-500">{{ order.buyer_phone }}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded-full text-xs {% if order.channel == 'ONLINE' %}bg-blue-100 text-blue-700{% else %}bg-indigo-100 text-indigo-700{% endif %}">{{ order.channel }}</span>
+                    </td>
+                    <td class="px-4 py-3 font-mono text-xs">
+                        {% for t in order.tickets.all %}
+                        <a href="{% url 'ticketing:ticket_detail' t.ticket_number %}" class="text-primary-800 font-bold hover:underline">{{ t.ticket_number }}</a>{% if not forloop.last %}, {% endif %}
+                        {% empty %}-{% endfor %}
+                    </td>
+                    <td class="px-4 py-3 text-xs text-gray-600">
+                        {% if order.payment_submitted_at %}
+                        {{ order.payment_submitted_at|date:"d/m H:i" }}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 font-semibold">Rp {{ order.total_amount|floatformat:0 }}</td>
+                    <td class="px-4 py-3">{{ order.get_status_display }}</td>
+                    {% if request.user.is_admin %}
+                    <td class="px-4 py-3 text-right">
+                        {% if row.can_delete %}
+                        <form method="post" action="{% url 'ticketing:order_delete' order.order_number %}" class="inline" onsubmit="return confirm('Hapus order {{ order.order_number }}?')">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-700 text-xs">Hapus</button>
+                        </form>
+                        {% else %}
+                        <span class="text-xs text-gray-400">—</span>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr><td colspan="8" class="px-6 py-12 text-center text-gray-400">Belum ada data.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

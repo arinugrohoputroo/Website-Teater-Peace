@@ -1,0 +1,146 @@
+{% extends 'panel_base.html' %}
+
+
+
+{% block title %}Ticket Collection — {{ event_name }}{% endblock %}
+
+
+
+{% block content %}
+
+<div class="max-w-3xl">
+
+    <div class="mb-6">
+
+        <h1 class="text-2xl font-bold text-gray-900">Ticket Collection</h1>
+
+        <p class="text-gray-500 mt-1">Serahkan tiket fisik ke pembeli.</p>
+
+    </div>
+
+
+
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
+
+        <form method="get" class="space-y-4">
+
+            <label class="block text-sm font-medium text-gray-700">Cari ID Ticket / Order ID / WhatsApp / Nama</label>
+
+            <input type="text" name="q" value="{{ q }}" autofocus placeholder="0047 atau TP-ON-000123" class="w-full px-4 py-4 rounded-xl border border-gray-200 font-mono">
+
+            <button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700">Cari Tiket</button>
+
+        </form>
+
+    </div>
+
+
+
+    {% if result %}
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+        <div class="bg-primary-700 text-white px-6 py-6 text-center">
+
+            <p class="text-sm opacity-80">ID TIKET</p>
+
+            <p class="text-5xl font-bold font-mono mt-1">{{ result.ticket_number }}</p>
+
+        </div>
+
+        <div class="p-6 space-y-3 text-sm">
+
+            <p><span class="text-gray-500">Nama:</span> <strong>{{ result.participant.name|default:result.order.buyer_name }}</strong></p>
+
+            <p><span class="text-gray-500">Season:</span> {{ result.ticket_type.name }}</p>
+
+            <p><span class="text-gray-500">Channel:</span> {{ result.sales_channel }}</p>
+
+            <p><span class="text-gray-500">Order:</span> <a href="{% url 'ticketing:order_detail' result.order.order_number %}" class="font-mono text-primary-700">{{ result.order.order_number }}</a></p>
+
+            <p><span class="text-gray-500">Payment:</span> {{ result.payment_status_display }}</p>
+
+            <p><span class="text-gray-500">Collection:</span>
+
+                <span class="{% if result.collection_status == 'COLLECTED' %}text-green-700{% else %}text-orange-700{% endif %} font-semibold">
+
+                    {{ result.get_collection_status_display|upper }}
+
+                </span>
+
+            </p>
+
+            {% if result.collection_status == 'NOT_COLLECTED' and result.status != 'CANCELLED' %}
+
+            <form method="post" class="pt-4">
+
+                {% csrf_token %}
+
+                <input type="hidden" name="action" value="collect">
+
+                <input type="hidden" name="ticket_id" value="{{ result.pk }}">
+
+                <input type="hidden" name="ticket_number" value="{{ result.ticket_number }}">
+
+                <input type="hidden" name="q" value="{{ result.ticket_number }}">
+
+                <button type="submit" class="w-full py-4 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600">
+
+                    SERAHKAN TIKET FISIK
+
+                </button>
+
+            </form>
+
+            {% else %}
+
+            <p class="text-sm text-gray-500 pt-2">Sudah diambil{% if result.collected_at %}: {{ result.collected_at }}{% endif %}{% if result.collected_by %} oleh {{ result.collected_by.name }}{% endif %}</p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% elif results %}
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+        <div class="divide-y divide-gray-100">
+
+            {% for ticket in results %}
+
+            <a href="{% url 'ticketing:collection' %}?ticket={{ ticket.ticket_number }}" class="px-6 py-4 flex justify-between hover:bg-gray-50 block">
+
+                <div>
+
+                    <p class="font-mono text-xl font-bold text-primary-800">{{ ticket.ticket_number }}</p>
+
+                    <p class="text-sm text-gray-500">{{ ticket.participant.name|default:ticket.order.buyer_name }} · {{ ticket.ticket_type.name }} · {{ ticket.sales_channel }}</p>
+
+                </div>
+
+                <span class="text-xs px-2 py-0.5 rounded-full h-fit {% if ticket.collection_status == 'COLLECTED' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+
+                    {{ ticket.get_collection_status_display }}
+
+                </span>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% elif q %}
+
+    <div class="bg-white rounded-2xl p-10 border border-gray-100 text-center text-gray-400">Tiket tidak ditemukan.</div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+

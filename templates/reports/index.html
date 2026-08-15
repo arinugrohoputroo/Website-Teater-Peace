@@ -1,0 +1,77 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}Laporan — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Laporan</h1>
+        <p class="text-gray-500 mt-1">Pemisahan ONLINE vs OFFLINE + tiket belum diambil.</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{% url 'reports:sales_csv' %}" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium">Export Tiket CSV</a>
+        <a href="{% url 'reports:not_collected_csv' %}" class="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium">Export Belum Diambil</a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <h2 class="font-semibold text-blue-800 mb-4">ONLINE SALES</h2>
+        <div class="space-y-2 text-sm">
+            <div class="flex justify-between"><span>Total tiket</span><strong>{{ online_count }}</strong></div>
+            <div class="flex justify-between"><span>Pendapatan</span><strong>Rp {{ online_revenue|floatformat:0 }}</strong></div>
+            <div class="flex justify-between"><span>Sudah diambil</span><strong>{{ online_collected }}</strong></div>
+            <div class="flex justify-between text-orange-700"><span>Belum diambil</span><strong>{{ online_not_collected }}</strong></div>
+        </div>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <h2 class="font-semibold text-indigo-800 mb-4">OFFLINE SALES</h2>
+        <div class="space-y-2 text-sm">
+            <div class="flex justify-between"><span>Total tiket</span><strong>{{ offline_count }}</strong></div>
+            <div class="flex justify-between"><span>Pendapatan</span><strong>Rp {{ offline_revenue|floatformat:0 }}</strong></div>
+            <div class="flex justify-between"><span>Sudah diambil</span><strong>{{ offline_collected }}</strong></div>
+            <div class="flex justify-between text-orange-700"><span>Belum diambil</span><strong>{{ offline_not_collected }}</strong></div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-2xl p-4 border border-gray-100"><p class="text-xs text-gray-500">TOTAL</p><p class="text-xl font-bold">{{ ticket_count }} tiket</p></div>
+    <div class="bg-white rounded-2xl p-4 border border-gray-100"><p class="text-xs text-gray-500">Pendapatan</p><p class="text-xl font-bold">Rp {{ sales_total|floatformat:0 }}</p></div>
+    <div class="bg-white rounded-2xl p-4 border border-gray-100"><p class="text-xs text-gray-500">Snack</p><p class="text-xl font-bold">{{ snack_count }}</p></div>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-100 font-semibold text-orange-800">Tiket Online/Offline Belum Diambil</div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-100 text-left">
+                    <th class="px-4 py-3 font-medium text-gray-500">ID</th>
+                    <th class="px-4 py-3 font-medium text-gray-500">Nama</th>
+                    <th class="px-4 py-3 font-medium text-gray-500">Season</th>
+                    <th class="px-4 py-3 font-medium text-gray-500">Order</th>
+                    <th class="px-4 py-3 font-medium text-gray-500">Channel</th>
+                    <th class="px-4 py-3 font-medium text-gray-500">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for ticket in not_collected %}
+                <tr>
+                    <td class="px-4 py-3 font-mono font-bold text-primary-800">
+                        <a href="{% url 'ticketing:ticket_detail' ticket.ticket_number %}">{{ ticket.ticket_number }}</a>
+                    </td>
+                    <td class="px-4 py-3">{{ ticket.participant.name|default:ticket.order.buyer_name }}</td>
+                    <td class="px-4 py-3">{{ ticket.ticket_type.name }}</td>
+                    <td class="px-4 py-3 font-mono text-xs">{{ ticket.order.order_number }}</td>
+                    <td class="px-4 py-3">{{ ticket.sales_channel }}</td>
+                    <td class="px-4 py-3 text-orange-700 text-xs font-semibold">BELUM DIAMBIL</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="px-6 py-10 text-center text-gray-400">Semua tiket fisik sudah diambil.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
