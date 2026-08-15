@@ -9,36 +9,36 @@
     <main class="flex-1 flex items-center justify-center px-4 py-12">
         <div class="max-w-sm w-full">
             <div class="mb-6 text-center">
-                <h1 class="text-2xl font-black uppercase tracking-tight text-purple-950 font-cinema">Masuk Akun Pembeli</h1>
-                <p class="text-slate-600 text-xs mt-1 font-medium">Masukkan nomor WhatsApp yang Anda gunakan saat memesan tiket.</p>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Masuk Akun Pembeli</h1>
+                <p class="text-slate-500 text-xs mt-1 font-normal">Masukkan nomor WhatsApp saat memesan tiket.</p>
             </div>
 
             {% if messages %}
             <div class="mb-4 space-y-2">
                 {% for message in messages %}
-                <div class="p-3.5 rounded-xl text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                <div class="p-3 rounded-xl text-xs font-medium bg-red-50 text-red-700 border border-red-200">
                     {{ message }}
                 </div>
                 {% endfor %}
             </div>
             {% endif %}
 
-            <div class="card-liz-purple rounded-3xl p-6 shadow-card-colored">
+            <div class="bg-white/90 rounded-2xl p-6 border border-purple-100 shadow-xs">
                 <form method="post" action="{% url 'public_order:buyer_login' %}" class="space-y-4">
                     {% csrf_token %}
                     <div>
-                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">No. WhatsApp</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">No. WhatsApp</label>
                         <input type="tel" name="phone" required placeholder="08123456789" value="{{ entered_phone|default:session_buyer_phone }}"
-                            class="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 outline-none font-semibold text-sm">
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 outline-none font-medium text-xs">
                     </div>
 
-                    <button type="submit" class="w-full py-3.5 btn-gradient-primary rounded-xl font-black text-xs uppercase tracking-widest active:scale-95 btn-touch font-cinema">
+                    <button type="submit" class="w-full py-3 btn-gradient-primary rounded-xl font-bold text-xs shadow-xs active:scale-95 btn-touch">
                         Masuk
                     </button>
                 </form>
 
-                <div class="mt-5 pt-4 border-t border-purple-100 text-center">
-                    <a href="{% url 'public_order:ticket_select' %}" class="text-xs font-extrabold uppercase tracking-wider text-purple-700 hover:text-purple-900 transition-colors">
+                <div class="mt-5 pt-4 border-t border-purple-50 text-center">
+                    <a href="{% url 'public_order:ticket_select' %}" class="text-xs font-semibold text-purple-700 hover:text-purple-900 transition-colors">
                         Belum punya tiket? Pesan Tiket &rarr;
                     </a>
                 </div>
