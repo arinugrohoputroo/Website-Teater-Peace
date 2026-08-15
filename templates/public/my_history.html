@@ -13,15 +13,27 @@
             <p class="text-slate-500 text-xs sm:text-sm mt-1">Lacak seluruh transaksi dan tiket resmi Teater Peace yang Anda miliki.</p>
         </div>
 
-        {% if messages %}
-        <div class="mb-6 space-y-2">
-            {% for message in messages %}
-            <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-sm">
-                {{ message }}
+        <!-- Google Login Card -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card mb-6 text-center">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Login Instant</p>
+            <h3 class="font-extrabold text-slate-900 text-base mb-1">Masuk dengan Akun Google</h3>
+            <p class="text-xs text-slate-500 max-w-xs mx-auto mb-4">Lacak seluruh transaksi tiket secara otomatis menggunakan email Google Anda.</p>
+            
+            <script src="https://accounts.google.com/gsi/client" async defer></script>
+            <div id="g_id_onload"
+                 data-client_id="{{ google_client_id|default:'123456789-example.apps.googleusercontent.com' }}"
+                 data-login_uri="{% url 'accounts:google_callback' %}"
+                 data-auto_prompt="false">
             </div>
-            {% endfor %}
+            <div class="g_id_signin flex justify-center"
+                 data-type="standard"
+                 data-shape="pill"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
         </div>
-        {% endif %}
 
         <!-- Auto-save / Search Card -->
         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card mb-8">

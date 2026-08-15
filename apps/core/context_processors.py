@@ -1,3 +1,4 @@
+from django.conf import settings
 from .models import EventConfig
 
 
@@ -7,4 +8,5 @@ def event_context(request):
         'event_date': EventConfig.get('event_date', ''),
         'event_venue': EventConfig.get('event_venue', ''),
         'event_contact': EventConfig.get('event_contact', '085712089906 (Ari Nugroho)'),
+        'google_client_id': getattr(settings, 'GOOGLE_CLIENT_ID', ''),
     }

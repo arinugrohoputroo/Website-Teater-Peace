@@ -186,3 +186,38 @@ def staff_delete(request, pk):
         log_action(request.user, 'Remove Staff', 'accounts', username, f'{name} removed from staff', request=request)
         messages.success(request, f'{name} telah dihapus dari panitia.')
     return redirect('accounts:staff_list')
+
+
+import base64
+import json
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def google_login_callback(request):
+    token = request.POST.get('credential') or request.POST.get('id_token')
+    if token:
+        try:
+            parts = token.split('.')
+            if len(parts) >= 2:
+                padded = parts[1] + '=' * (-len(parts[1]) % 4)
+                payload = json.loads(base64.urlsafe_b64decode(padded).decode('utf-8'))
+                email = payload.get('email')
+                name = payload.get('name')
+                if email:
+                    request.session['buyer_email'] = email
+                    user, created = User.objects.get_or_create(
+                        email=email.lower(),
+                        defaults={
+                            'username': email.split('@')[0],
+                            'name': name or email.split('@')[0],
+                            'role': 'CUSTOMER',
+                        }
+                    )
+                    if not user.is_panitia:
+                        login(request, user)
+                    messages.success(request, f'Selamat datang, {user.name}! Berhasil masuk dengan Akun Google.')
+                    return redirect('public_order:my_history')
+        except Exception:
+            pass
+    messages.error(request, 'Gagal verifikasi login Google.')
+    return redirect('public_order:my_history')

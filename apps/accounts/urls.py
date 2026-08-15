@@ -12,4 +12,5 @@ urlpatterns = [
     path('staff/<int:pk>/toggle/', views.staff_toggle, name='staff_toggle'),
     path('staff/<int:pk>/delete/', views.staff_delete, name='staff_delete'),
     path('staff/<int:pk>/reset-password/', views.staff_reset_password, name='staff_reset_password'),
+    path('google-callback/', views.google_login_callback, name='google_callback'),
 ]
