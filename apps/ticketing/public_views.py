@@ -66,15 +66,17 @@ def checkout(request):
         messages.error(request, 'Pilih minimal satu tiket.')
         return redirect('public_order:ticket_select')
 
-    request.session['cart'] = [
-        {'type_id': i['type'].id, 'qty': i['qty']} for i in items
-    ]
+        request.session['buyer_phone'] = buyer_phone
+        request.session['buyer_email'] = buyer_email
+        request.session['cart'] = [
+            {'type_id': i['type'].id, 'qty': i['qty']} for i in items
+        ]
 
-    return render(request, 'public/checkout.html', {
-        'items': items,
-        'total': total,
-        'payment_methods': payment_methods,
-    })
+        return render(request, 'public/checkout.html', {
+            'items': items,
+            'total': total,
+            'payment_methods': payment_methods,
+        })
 
 
 def order_confirm(request, order_number):
@@ -113,6 +115,8 @@ def order_confirm(request, order_number):
             messages.error(request, str(exc))
             return redirect('public_order:ticket_select')
         request.session.pop('cart', None)
+        request.session['buyer_phone'] = buyer_phone
+        request.session['buyer_email'] = buyer_email
         return redirect('public_order:order_confirm', order_number=order.order_number)
 
     order = get_object_or_404(
@@ -175,6 +179,8 @@ def upload_proof(request, order_number):
         order.save(update_fields=['status', 'updated_at'])
 
         request.session['notify_wa_url'] = _build_admin_wa_url(order, payment)
+        request.session['buyer_phone'] = order.buyer_phone
+        request.session['buyer_email'] = order.buyer_email
         messages.success(request, 'Bukti transfer berhasil diunggah. Data Anda sudah tersimpan dan sedang diverifikasi panitia.')
         return redirect('public_order:order_confirm', order_number=order_number)
 
@@ -219,6 +225,7 @@ def order_status(request):
                     order_number=order_number,
                     buyer_phone=phone,
                 )
+                request.session['buyer_phone'] = phone
             except Order.DoesNotExist:
                 messages.error(request, 'Order tidak ditemukan. Periksa nomor order dan nomor WhatsApp.')
 
@@ -238,4 +245,39 @@ def order_detail(request, order_number):
         'order': order,
         'tickets': tickets,
         'payment': payment,
+    })
+
+
+from django.db.models import Q
+
+def my_history(request):
+    phone = (request.POST.get('phone') or request.GET.get('p') or request.session.get('buyer_phone') or '').strip()
+    email = (request.POST.get('email') or request.GET.get('e') or request.session.get('buyer_email') or '').strip()
+
+    if request.user.is_authenticated:
+        if not email and getattr(request.user, 'email', None):
+            email = request.user.email
+        if not phone and getattr(request.user, 'phone', None):
+            phone = request.user.phone
+
+    orders = []
+    if phone or email:
+        query = Order.objects.prefetch_related('tickets__ticket_type', 'payments', 'order_items__ticket_type')
+        if phone and email:
+            orders = query.filter(Q(buyer_phone=phone) | Q(buyer_email__iexact=email)).order_by('-created_at')
+        elif phone:
+            orders = query.filter(buyer_phone=phone).order_by('-created_at')
+        elif email:
+            orders = query.filter(buyer_email__iexact=email).order_by('-created_at')
+
+        if phone:
+            request.session['buyer_phone'] = phone
+        if email:
+            request.session['buyer_email'] = email
+
+    return render(request, 'public/my_history.html', {
+        'orders': orders,
+        'phone': phone,
+        'email': email,
+        'searched': bool(phone or email),
     })

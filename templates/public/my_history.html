@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Riwayat Pembelian Saya — {{ event_name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex flex-col bg-slate-50 pb-16">
+    {% include 'public/_nav.html' %}
+
+    <main class="flex-1 max-w-2xl mx-auto w-full px-4 py-6 sm:py-10">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Riwayat Tiket Saya</h1>
+            <p class="text-slate-500 text-xs sm:text-sm mt-1">Lacak seluruh transaksi dan tiket resmi Teater Peace yang Anda miliki.</p>
+        </div>
+
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-sm">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Auto-save / Search Card -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card mb-8">
+            <form method="get" action="{% url 'public_order:my_history' %}" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">No. WhatsApp / Handphone Pembeli</label>
+                    <div class="relative">
+                        <input type="tel" name="p" value="{{ phone }}" placeholder="Contoh: 08123456789"
+                            class="w-full px-4 py-3 sm:py-3.5 rounded-2xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all font-semibold text-slate-900">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Email Pembeli (Opsional)</label>
+                    <input type="email" name="e" value="{{ email }}" placeholder="nama@email.com"
+                        class="w-full px-4 py-3 sm:py-3.5 rounded-2xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all font-semibold text-slate-900">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white rounded-2xl font-extrabold text-sm shadow-md shadow-primary-500/20 active:scale-95 transition-all btn-touch">
+                    🔍 Cari & Tampilkan Riwayat Tiket
+                </button>
+            </form>
+        </div>
+
+        <!-- Orders List -->
+        {% if orders %}
+        <div class="space-y-4">
+            <h2 class="font-extrabold text-slate-900 text-lg">Daftar Transaksi ({{ orders|length }})</h2>
+            
+            {% for order in orders %}
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card hover:shadow-md transition-all">
+                <div class="flex items-center justify-between gap-2 pb-4 border-b border-slate-100">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Nomor Order</span>
+                        <span class="font-mono font-black text-primary-800 text-lg sm:text-xl">{{ order.order_number }}</span>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-black
+                        {% if order.status == 'PAID' %}bg-emerald-100 text-emerald-800 border border-emerald-200
+                        {% elif order.status == 'WAITING_VERIFICATION' %}bg-amber-100 text-amber-800 border border-amber-200
+                        {% elif order.status == 'REJECTED' %}bg-red-100 text-red-800 border border-red-200
+                        {% else %}bg-sky-100 text-sky-800 border border-sky-200{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="py-4 space-y-2 text-xs sm:text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500 font-medium">Tanggal Transaksi</span>
+                        <span class="font-semibold text-slate-800">{{ order.created_at|date:"d M Y H:i" }} WIB</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500 font-medium">Jumlah Tiket</span>
+                        <span class="font-bold text-slate-900">{{ order.quantity }} Tiket</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500 font-medium">Total Harga</span>
+                        <span class="font-black text-primary-800 text-base">Rp {{ order.total_amount|floatformat:0 }}</span>
+                    </div>
+                </div>
+
+                <!-- Tickets -->
+                {% if order.tickets.exists %}
+                <div class="pt-3 border-t border-slate-100">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">ID Tiket Resmi:</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for ticket in order.tickets.all %}
+                        <span class="px-3 py-1.5 rounded-xl bg-slate-900 text-amber-300 font-mono font-bold text-xs sm:text-sm shadow-sm">
+                            🎟️ {{ ticket.ticket_number }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+                    <a href="{% url 'public_order:order_confirm' order.order_number %}" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-xs font-bold rounded-xl text-center transition-colors btn-touch">
+                        Detail & Status Order
+                    </a>
+                    {% if order.status == 'PAID' or order.status == 'WAITING_VERIFICATION' %}
+                    <a href="{% url 'public_order:receipt' order.order_number %}?p={{ order.buyer_phone|urlencode }}&print=1" target="_blank" class="py-2.5 px-4 bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 text-xs font-bold rounded-xl text-center transition-colors btn-touch">
+                        📄 Struk (PDF)
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% elif searched %}
+        <div class="bg-white rounded-3xl p-12 border border-slate-200 text-center text-slate-400">
+            <p class="text-base font-bold text-slate-700">Tidak ada riwayat tiket ditemukan</p>
+            <p class="text-xs text-slate-500 mt-1">Pastikan nomor WhatsApp atau email yang Anda masukkan sudah benar saat melakukan pembelian.</p>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-3xl p-10 border border-slate-200 text-center text-slate-500">
+            <p class="text-sm font-semibold">Masukkan Nomor WhatsApp Anda di atas untuk melihat seluruh riwayat tiket yang Anda beli.</p>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

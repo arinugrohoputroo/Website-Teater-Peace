@@ -77,7 +77,14 @@
     </div>
 </div>
 
-{% if print_mode %}
-<script>window.addEventListener('load', () => window.print());</script>
-{% endif %}
+<script>
+function triggerPrint() {
+    window.print();
+}
+document.addEventListener('DOMContentLoaded', function() {
+    {% if print_mode %}
+    setTimeout(triggerPrint, 400);
+    {% endif %}
+});
+</script>
 {% endblock %}

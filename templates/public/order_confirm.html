@@ -199,14 +199,16 @@
             {% endif %}
 
             {% if can_download_receipt %}
-            <a href="{% url 'public_order:receipt' order.order_number %}?p={{ order.buyer_phone|urlencode }}&print=1" class="block w-full py-3.5 bg-white border border-slate-200 text-slate-800 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-colors text-center shadow-sm btn-touch">
+            <a href="{% url 'public_order:receipt' order.order_number %}?p={{ order.buyer_phone|urlencode }}&print=1" target="_blank" class="block w-full py-3.5 bg-white border border-slate-200 text-slate-800 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-colors text-center shadow-sm btn-touch">
                 📄 Unduh Struk Pembelian (PDF)
             </a>
             {% endif %}
 
+            {% if order.status == 'WAITING_VERIFICATION' or order.status == 'PAID' %}
             <a href="{% url 'public_order:order_status' %}?q={{ order.order_number }}&p={{ order.buyer_phone|urlencode }}" class="block w-full py-3.5 bg-slate-100 text-slate-700 rounded-2xl font-bold text-sm hover:bg-slate-200/80 transition-colors text-center btn-touch">
                 🔍 Cek & Lacak Halaman Status Order Ini
             </a>
+            {% endif %}
         </div>
 
         <div class="mt-8 text-center">

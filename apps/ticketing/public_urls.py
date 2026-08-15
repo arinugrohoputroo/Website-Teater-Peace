@@ -11,4 +11,5 @@ urlpatterns = [
     path('receipt/<str:order_number>/', public_views.order_receipt, name='receipt'),
     path('status/', public_views.order_status, name='order_status'),
     path('status/<str:order_number>/', public_views.order_detail, name='order_detail'),
+    path('history/', public_views.my_history, name='my_history'),
 ]
