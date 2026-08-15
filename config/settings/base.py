@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'apps.participants',
     'apps.ticketing',
     'apps.payments',
-    'apps.checkin',
     'apps.snacks',
     'apps.scanner',
     'apps.reports',

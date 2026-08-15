@@ -240,7 +240,7 @@ class Ticket(models.Model):
 
     @property
     def is_checked_in(self):
-        return hasattr(self, 'checkin') or self.status == self.Status.USED
+        return self.status == self.Status.USED
 
     @property
     def payment_status(self):

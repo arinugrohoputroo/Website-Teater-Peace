@@ -19,7 +19,6 @@ urlpatterns = [
     path('ticketing/', include('apps.ticketing.urls')),
     path('ticket-collection/', include(('apps.ticketing.collection_urls', 'ticket_collection'))),
     path('payments/', include('apps.payments.urls')),
-    path('checkin/', include('apps.checkin.urls')),
     path('snacks/', include('apps.snacks.urls')),
     path('scanner/', include('apps.scanner.urls')),
     path('reports/', include('apps.reports.urls')),

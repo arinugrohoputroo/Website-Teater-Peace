@@ -63,7 +63,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 class StaffPermission(models.Model):
     class Module(models.TextChoices):
         TICKETING = 'ticketing', 'Ticketing'
-        CHECKIN = 'checkin', 'Check-in'
         SNACK = 'snack', 'Snack'
         PAYMENT = 'payment', 'Pembayaran'
         REPORT = 'report', 'Laporan'

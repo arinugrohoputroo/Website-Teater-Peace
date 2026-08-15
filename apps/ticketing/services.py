@@ -11,10 +11,10 @@ from .models import Order, OrderItem, Ticket, TicketType
 def get_max_tickets():
     from apps.core.models import EventConfig
     try:
-        val = EventConfig.get('max_tickets', '1000')
+        val = EventConfig.get('max_tickets', '99999')
         return int(val)
     except (ValueError, TypeError):
-        return 1000
+        return 99999
 
 
 
