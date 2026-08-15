@@ -7,10 +7,17 @@
     {% include 'public/_nav.html' %}
 
     <main class="flex-1 max-w-2xl mx-auto w-full px-4 py-6 sm:py-10">
-        <!-- Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Riwayat Tiket Saya</h1>
-            <p class="text-slate-500 text-xs sm:text-sm mt-1">Lacak seluruh transaksi dan tiket resmi Teater Peace yang Anda miliki.</p>
+        <!-- E-Ticket Backup Banner -->
+        <div class="bg-gradient-to-r from-primary-900 to-slate-900 text-white rounded-3xl p-5 sm:p-6 mb-6 shadow-lg border border-primary-700/50">
+            <div class="flex items-start gap-3">
+                <span class="text-3xl shrink-0">🛡️</span>
+                <div>
+                    <h3 class="font-extrabold text-amber-300 text-base sm:text-lg">Akun & Backup Tiket Permanent</h3>
+                    <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+                        Nomor WhatsApp Anda terdaftar <span class="font-bold text-white">secara permanen di database server</span>. Jika tiket fisik Anda hilang atau Anda berganti HP, cukup buka menu ini dan masukkan No. WhatsApp Anda untuk membuka E-Ticket cadangan resmi di pintu masuk.
+                    </p>
+                </div>
+            </div>
         </div>
 
         {% if google_client_id %}
