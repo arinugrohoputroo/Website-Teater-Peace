@@ -66,17 +66,15 @@ def checkout(request):
         messages.error(request, 'Pilih minimal satu tiket.')
         return redirect('public_order:ticket_select')
 
-        request.session['buyer_phone'] = buyer_phone
-        request.session['buyer_email'] = buyer_email
-        request.session['cart'] = [
-            {'type_id': i['type'].id, 'qty': i['qty']} for i in items
-        ]
+    request.session['cart'] = [
+        {'type_id': i['type'].id, 'qty': i['qty']} for i in items
+    ]
 
-        return render(request, 'public/checkout.html', {
-            'items': items,
-            'total': total,
-            'payment_methods': payment_methods,
-        })
+    return render(request, 'public/checkout.html', {
+        'items': items,
+        'total': total,
+        'payment_methods': payment_methods,
+    })
 
 
 def order_confirm(request, order_number):
