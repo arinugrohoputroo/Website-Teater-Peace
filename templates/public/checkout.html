@@ -73,7 +73,13 @@
                             <p class="text-sm text-gray-500 mt-1">{{ pm.account_number }} a.n. {{ pm.account_name }}</p>
                             {% endif %}
                             {% if pm.qr_image %}
-                            <img src="{{ pm.qr_image.url }}" alt="QRIS" class="mt-3 max-h-32 rounded-lg border border-gray-100">
+                            <div class="mt-3">
+                                <img src="{{ pm.qr_image.url }}" alt="QRIS {{ pm.name }}" class="max-h-48 rounded-2xl border border-slate-200 shadow-sm mb-2">
+                                <a href="{{ pm.qr_image.url }}" download="QRIS-{{ pm.name|slugify }}.png" target="_blank" onclick="event.stopPropagation();" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-slate-800 transition-colors btn-touch">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    <span>Unduh Gambar QRIS</span>
+                                </a>
+                            </div>
                             {% endif %}
                             {% if pm.instructions %}
                             <p class="text-xs text-gray-400 mt-1">{{ pm.instructions }}</p>

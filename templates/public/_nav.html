@@ -26,6 +26,10 @@
                 <a href="{% url 'dashboard:index' %}" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-primary-700 bg-primary-50 border border-primary-200/80 hover:bg-primary-100/80 rounded-xl transition-colors btn-touch">
                     Panitia
                 </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 rounded-xl transition-colors btn-touch">
+                    Panitia
+                </a>
                 {% endif %}
             </div>
         </div>

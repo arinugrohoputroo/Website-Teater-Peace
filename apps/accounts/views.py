@@ -43,7 +43,7 @@ def logout_view(request):
         log_action(request.user, 'Logout', 'accounts', request.user.username, request=request)
     logout(request)
     messages.success(request, 'Anda telah logout.')
-    return redirect('core:home')
+    return redirect('login')
 
 
 @login_required
