@@ -49,14 +49,10 @@
                 Official E-Ticket Portal Gelar Karya Theater Peace Ke-28 — <span class="text-primary-300 font-semibold italic">Mengukir Mimpi</span>. Pesan tiket Anda sekarang sebelum kehabisan!
             </p>
 
-            <div class="flex flex-col sm:flex-row gap-3.5 justify-center px-4 max-w-md mx-auto">
-                <a href="{% url 'public_order:ticket_select' %}" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white rounded-2xl text-base font-bold shadow-glow hover:shadow-glow-lg transition-all active:scale-95 flex items-center justify-center gap-2 btn-touch">
+            <div class="flex justify-center px-4 max-w-md mx-auto">
+                <a href="{% url 'public_order:ticket_select' %}" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white rounded-2xl text-base font-bold shadow-lg shadow-primary-500/25 transition-all active:scale-95 flex items-center justify-center gap-2 btn-touch">
                     <span>Beli Tiket Sekarang</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </a>
-                <a href="{% url 'public_order:order_status' %}" class="w-full sm:w-auto px-8 py-4 bg-slate-800/80 hover:bg-slate-800 text-slate-200 rounded-2xl text-base font-semibold border border-slate-700/80 backdrop-blur-md transition-all active:scale-95 flex items-center justify-center gap-2 btn-touch">
-                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <span>Cek Status Order</span>
                 </a>
             </div>
         </div>

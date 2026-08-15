@@ -207,28 +207,10 @@ def order_receipt(request, order_number):
 
 
 def order_status(request):
-    order = None
-    searched = False
-
-    if request.method == 'POST' or request.GET.get('q'):
-        searched = True
-        order_number = (request.POST.get('order_number') or request.GET.get('q', '')).strip().upper()
-        phone = (request.POST.get('phone') or request.GET.get('p', '')).strip()
-
-        if order_number and phone:
-            try:
-                order = Order.objects.prefetch_related(
-                    'tickets__ticket_type',
-                    'payments',
-                ).get(
-                    order_number=order_number,
-                    buyer_phone=phone,
-                )
-                request.session['buyer_phone'] = phone
-            except Order.DoesNotExist:
-                messages.error(request, 'Order tidak ditemukan. Periksa nomor order dan nomor WhatsApp.')
-
-    return render(request, 'public/order_status.html', {'order': order, 'searched': searched})
+    phone = (request.POST.get('phone') or request.GET.get('p') or '').strip()
+    if phone:
+        return redirect(f"{reverse('public_order:my_history')}?p={phone}")
+    return redirect('public_order:my_history')
 
 
 def order_detail(request, order_number):
