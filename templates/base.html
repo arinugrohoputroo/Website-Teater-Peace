@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full antialiased selection:bg-amber-500 selection:text-white">
+<html lang="id" class="h-full antialiased selection:bg-purple-600 selection:text-white">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#701a75">
     <title>{% block title %}{{ event_name }}{% endblock %}</title>
     
-    <!-- Google Fonts: Montserrat (Cinema XXI style) & Plus Jakarta Sans -->
+    <!-- Google Fonts: Montserrat & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
@@ -34,10 +34,9 @@
                         },
                     },
                     boxShadow: {
-                        'glow-amber': '0 0 30px -5px rgba(245, 158, 11, 0.35)',
-                        'glow-primary': '0 0 30px -5px rgba(192, 38, 211, 0.3)',
-                        'card-hover': '0 20px 35px -10px rgba(0, 0, 0, 0.07), 0 8px 15px -6px rgba(0, 0, 0, 0.03)',
-                        'cinema': '0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 10px -2px rgba(0, 0, 0, 0.02)',
+                        'glow-purple': '0 0 25px -3px rgba(192, 38, 211, 0.35)',
+                        'glow-amber': '0 0 25px -3px rgba(245, 158, 11, 0.35)',
+                        'card-colored': '0 10px 30px -5px rgba(192, 38, 211, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
                     }
                 }
             }
@@ -49,54 +48,85 @@
         body {
             font-family: 'Montserrat', 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            background-color: #ffffff;
+            background-color: #faf5ff;
             color: #0f172a;
         }
 
-        /* Ambient light glows for clean white pages */
-        .ambient-light-glow {
+        /* Elegant light ambient glow */
+        .ambient-canvas {
+            background-color: #faf5ff;
             background-image: 
-                radial-gradient(circle at 15% 10%, rgba(254, 243, 199, 0.5) 0%, transparent 40%),
-                radial-gradient(circle at 85% 20%, rgba(250, 232, 255, 0.4) 0%, transparent 45%),
-                radial-gradient(circle at 50% 90%, rgba(241, 245, 249, 0.8) 0%, transparent 60%);
+                radial-gradient(circle at 10% 10%, rgba(250, 232, 255, 0.7) 0%, transparent 45%),
+                radial-gradient(circle at 90% 20%, rgba(254, 243, 199, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 50% 90%, rgba(245, 208, 254, 0.4) 0%, transparent 60%);
         }
 
         /* Smooth scroll & Custom Scrollbar */
         html { scroll-behavior: smooth; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f8fafc; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-track { background: #fdf4ff; }
+        ::-webkit-scrollbar-thumb { background: #f0abfc; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c026d3; }
 
-        /* Interactive card elevation & hover effects */
-        .interactive-card {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Colored Liz (border) cards */
+        .card-liz-purple {
+            background: #ffffff;
+            border: 1.5px solid rgba(192, 38, 211, 0.18);
+            box-shadow: 0 10px 30px -8px rgba(112, 26, 117, 0.06);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .interactive-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08);
+        .card-liz-purple:hover {
+            border-color: rgba(192, 38, 211, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 18px 36px -10px rgba(192, 38, 211, 0.15);
         }
 
-        /* Mobile Touch Ripple / Press scale effect */
+        .card-liz-amber {
+            background: #ffffff;
+            border: 1.5px solid rgba(245, 158, 11, 0.25);
+            box-shadow: 0 10px 30px -8px rgba(217, 119, 6, 0.06);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-liz-amber:hover {
+            border-color: rgba(245, 158, 11, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 18px 36px -10px rgba(245, 158, 11, 0.15);
+        }
+
+        /* Gradient Button Styles (NO BLACK BUTTONS) */
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #c026d3 0%, #a21caf 50%, #701a75 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px -4px rgba(192, 38, 211, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-gradient-primary:hover {
+            background: linear-gradient(135deg, #d946ef 0%, #c026d3 50%, #a21caf 100%);
+            box-shadow: 0 12px 25px -4px rgba(192, 38, 211, 0.5);
+        }
+
+        .btn-gradient-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-gradient-amber:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            box-shadow: 0 12px 25px -4px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Touch scale effect */
         .btn-touch {
-            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
         .btn-touch:active {
             transform: scale(0.97);
         }
-
-        /* Keyframe pulse glow */
-        @keyframes subtle-glow {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 0.9; transform: scale(1.03); }
-        }
-        .animate-subtle-glow {
-            animation: subtle-glow 6s infinite ease-in-out;
-        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="h-full bg-white text-slate-900 antialiased selection:bg-amber-500 selection:text-white">
+<body class="h-full bg-purple-50/40 text-slate-900 antialiased selection:bg-purple-600 selection:text-white">
     {% block body %}{% endblock %}
     {% block extra_js %}{% endblock %}
 </body>
