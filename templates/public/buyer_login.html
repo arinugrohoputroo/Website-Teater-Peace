@@ -32,7 +32,7 @@
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">No. WhatsApp / Handphone</label>
                         <div class="relative">
-                            <input type="tel" name="phone" required placeholder="Contoh: 08123456789" value="{{ session_buyer_phone }}"
+                            <input type="tel" name="phone" required placeholder="Contoh: 08123456789" value="{{ entered_phone|default:session_buyer_phone }}"
                                 class="w-full px-4 py-3.5 bg-slate-900/90 text-white placeholder-slate-500 rounded-2xl border border-slate-700 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 outline-none transition-all font-semibold text-base">
                         </div>
                         <p class="text-[11px] text-slate-400 mt-2">Nomor ini digunakan untuk mengenali & mengamankan seluruh e-tiket Anda.</p>

@@ -287,25 +287,43 @@ def my_history(request):
 
 
 def buyer_login(request):
+    entered_phone = ''
     if request.method == 'POST':
         phone = request.POST.get('phone', '').strip()
+        entered_phone = phone
         if not phone:
             messages.error(request, 'Masukkan Nomor WhatsApp Anda.')
             return render(request, 'public/buyer_login.html')
         
-        request.session['buyer_phone'] = phone
+        # Clean phone format
+        clean = phone.replace(' ', '').replace('-', '').replace('+', '')
+        
+        # Search DB for matching buyer orders (exact or last 8 digits)
+        query = Q(buyer_phone=phone) | Q(buyer_phone=clean)
+        if len(clean) >= 8:
+            query |= Q(buyer_phone__icontains=clean[-8:])
+            
+        existing_orders = Order.objects.filter(query)
+        
+        if not existing_orders.exists():
+            messages.error(
+                request, 
+                f'❌ Nomor WhatsApp ({phone}) tidak ditemukan dalam database pesanan. Pastikan Anda memasukkan nomor yang sama saat memesan tiket.'
+            )
+            return render(request, 'public/buyer_login.html', {'entered_phone': entered_phone})
+        
+        latest_order = existing_orders.order_by('-created_at').first()
+        
+        request.session['buyer_phone'] = latest_order.buyer_phone
         request.session['buyer_logged_in'] = True
+        request.session['buyer_name'] = latest_order.buyer_name
+        if latest_order.buyer_email:
+            request.session['buyer_email'] = latest_order.buyer_email
         
-        existing_order = Order.objects.filter(buyer_phone=phone).order_by('-created_at').first()
-        if existing_order:
-            request.session['buyer_name'] = existing_order.buyer_name
-            if existing_order.buyer_email:
-                request.session['buyer_email'] = existing_order.buyer_email
-        
-        messages.success(request, f'Selamat datang! Anda berhasil masuk ke Akun Pembeli ({phone}).')
+        messages.success(request, f'Selamat datang kembali, {latest_order.buyer_name}! Berhasil masuk ke Akun Pembeli.')
         return redirect('public_order:my_history')
 
-    return render(request, 'public/buyer_login.html')
+    return render(request, 'public/buyer_login.html', {'entered_phone': entered_phone})
 
 
 def buyer_logout(request):
