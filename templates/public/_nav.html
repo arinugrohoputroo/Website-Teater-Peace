@@ -1,24 +1,31 @@
 {% load static %}
-<nav class="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-6xl mx-auto px-4 py-3">
-        <div class="flex items-center justify-between gap-4">
-            <a href="/" class="flex items-center gap-3 min-w-0 group">
-                <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}" class="w-11 h-11 rounded-full object-cover ring-2 ring-primary-100 group-hover:ring-primary-200 transition-all shrink-0">
-                <div class="min-w-0 hidden sm:block">
-                    <p class="font-bold text-primary-800 leading-tight truncate">{{ event_name }}</p>
-                    <p class="text-[11px] text-gray-500 truncate">Gelar Karya Ke-28</p>
+<nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm transition-all duration-200">
+    <div class="max-w-6xl mx-auto px-4 py-2.5 sm:py-3">
+        <div class="flex items-center justify-between gap-3">
+            <a href="/" class="flex items-center gap-2.5 min-w-0 group btn-touch">
+                <div class="relative shrink-0">
+                    <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-primary-300/50 group-hover:ring-primary-500 transition-all shadow-sm">
+                    <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                </div>
+                <div class="min-w-0">
+                    <p class="font-extrabold text-slate-900 leading-tight text-sm sm:text-base tracking-tight truncate group-hover:text-primary-600 transition-colors">{{ event_name }}</p>
+                    <p class="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Gelar Karya Ke-28</p>
                 </div>
             </a>
 
-            <div class="flex items-center gap-1 sm:gap-2">
-                <a href="/" class="hidden md:inline-flex px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors">Home</a>
-                <a href="{% url 'public_order:ticket_select' %}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors">Tiket</a>
-                <a href="{% url 'public_order:order_status' %}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors">Cek Order</a>
-                <a href="{% url 'public_order:ticket_select' %}" class="hidden sm:inline-flex px-4 py-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-sm shadow-primary-200">Beli Tiket</a>
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <a href="/" class="hidden md:inline-flex px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-primary-700 hover:bg-primary-50/80 rounded-xl transition-colors btn-touch">Home</a>
+                <a href="{% url 'public_order:ticket_select' %}" class="px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-primary-700 hover:bg-primary-50/80 rounded-xl transition-colors btn-touch">Tiket</a>
+                <a href="{% url 'public_order:order_status' %}" class="px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-primary-700 hover:bg-primary-50/80 rounded-xl transition-colors btn-touch">Cek Status</a>
+                
+                <a href="{% url 'public_order:ticket_select' %}" class="inline-flex px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 rounded-xl transition-all shadow-md shadow-primary-500/20 active:scale-95 btn-touch">
+                    Beli Tiket
+                </a>
+                
                 {% if request.user.is_authenticated and request.user.is_panitia %}
-                <a href="{% url 'dashboard:index' %}" class="px-3 py-2 text-sm font-medium text-primary-700 border border-primary-200 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">Panitia</a>
-                {% else %}
-                <a href="{% url 'login' %}" class="px-3 py-2 text-sm font-medium text-gray-600 border border-gray-200 hover:border-primary-200 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors">Panitia</a>
+                <a href="{% url 'dashboard:index' %}" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-bold text-primary-700 bg-primary-50 border border-primary-200/80 hover:bg-primary-100/80 rounded-xl transition-colors btn-touch">
+                    Panitia
+                </a>
                 {% endif %}
             </div>
         </div>

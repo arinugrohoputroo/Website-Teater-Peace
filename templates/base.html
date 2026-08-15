@@ -1,18 +1,42 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
+<html lang="id" class="h-full antialiased selection:bg-primary-500 selection:text-white">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#701a75">
     <title>{% block title %}{{ event_name }}{% endblock %}</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
                     colors: {
-                        primary: { 50:'#fdf4ff',100:'#fae8ff',200:'#f5d0fe',300:'#f0abfc',400:'#e879f9',500:'#d946ef',600:'#c026d3',700:'#a21caf',800:'#86198f',900:'#701a75',950:'#4a044e' },
-                        accent: { 50:'#fffbeb',100:'#fef3c7',200:'#fde68a',300:'#fcd34d',400:'#fbbf24',500:'#f59e0b',600:'#d97706',700:'#b45309',800:'#92400e',900:'#78350f' },
+                        primary: { 
+                            50: '#fdf4ff', 100: '#fae8ff', 200: '#f5d0fe', 300: '#f0abfc', 
+                            400: '#e879f9', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf', 
+                            800: '#86198f', 900: '#701a75', 950: '#4a044e' 
+                        },
+                        accent: { 
+                            50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 
+                            400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309', 
+                            800: '#92400e', 900: '#78350f' 
+                        },
+                    },
+                    boxShadow: {
+                        'glow': '0 0 25px -5px rgba(217, 70, 239, 0.3)',
+                        'glow-lg': '0 0 40px -10px rgba(192, 38, 211, 0.4)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
                     }
                 }
             }
@@ -20,13 +44,66 @@
     </script>
     <style>
         [x-cloak] { display: none !important; }
-        .sidebar-link { display:flex; align-items:center; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.875rem; font-weight:500; color:#374151; transition:background .15s,color .15s; }
-        .sidebar-link:hover { background:#fdf4ff; color:#a21caf; }
-        .sidebar-link.active { background:#fae8ff; color:#86198f; font-weight:600; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Smooth scroll & Custom Scrollbar */
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Glassmorphism helpers */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 0.875rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-link:hover {
+            background: #fdf4ff;
+            color: #a21caf;
+            transform: translateX(3px);
+        }
+        .sidebar-link.active {
+            background: linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%);
+            color: #701a75;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(192, 38, 211, 0.15);
+        }
+        
+        /* Mobile Touch Ripple / Press scale effect */
+        .btn-touch {
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+        }
+        .btn-touch:active {
+            transform: scale(0.97);
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="h-full bg-gray-50 text-gray-900">
+<body class="h-full bg-slate-50 text-slate-900 antialiased selection:bg-primary-500 selection:text-white">
     {% block body %}{% endblock %}
     {% block extra_js %}{% endblock %}
 </body>
