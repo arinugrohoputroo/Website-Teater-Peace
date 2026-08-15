@@ -13,6 +13,7 @@
             <p class="text-slate-500 text-xs sm:text-sm mt-1">Lacak seluruh transaksi dan tiket resmi Teater Peace yang Anda miliki.</p>
         </div>
 
+        {% if google_client_id %}
         <!-- Google Login Card -->
         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card mb-6 text-center">
             <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Login Instant</p>
@@ -21,7 +22,7 @@
             
             <script src="https://accounts.google.com/gsi/client" async defer></script>
             <div id="g_id_onload"
-                 data-client_id="{{ google_client_id|default:'123456789-example.apps.googleusercontent.com' }}"
+                 data-client_id="{{ google_client_id }}"
                  data-login_uri="{% url 'accounts:google_callback' %}"
                  data-auto_prompt="false">
             </div>
@@ -34,6 +35,7 @@
                  data-logo_alignment="left">
             </div>
         </div>
+        {% endif %}
 
         <!-- Auto-save / Search Card -->
         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card mb-8">
