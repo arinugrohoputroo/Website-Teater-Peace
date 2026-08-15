@@ -1,45 +1,46 @@
 {% load static %}
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-purple-200/70 shadow-xs transition-all">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2 sm:gap-4">
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-purple-100 shadow-xs transition-all">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         <!-- Brand Logo & Title -->
         <a href="/" class="flex items-center gap-2.5 shrink-0 group">
-            <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-purple-300 shadow-xs group-hover:border-amber-400 group-hover:scale-105 transition-all">
+            <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-purple-200 shadow-xs group-hover:scale-105 transition-transform">
             <div class="min-w-0">
-                <p class="font-black text-purple-950 leading-none text-xs sm:text-sm tracking-wide uppercase truncate font-cinema group-hover:text-purple-700 transition-colors">{{ event_name }}</p>
-                <p class="text-[9px] sm:text-[10px] font-bold text-purple-600 uppercase tracking-widest mt-0.5 truncate">GELAR KARYA 28</p>
+                <p class="font-bold text-slate-900 leading-none text-xs sm:text-sm tracking-tight truncate group-hover:text-purple-700 transition-colors">{{ event_name }}</p>
+                <p class="text-[10px] font-semibold text-purple-600 tracking-wide mt-0.5 truncate">Gelar Karya Ke-28</p>
             </div>
         </a>
 
-        <!-- Right Navigation Links (Single Row, No Stacking) -->
-        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            <a href="{% url 'public_order:ticket_select' %}" class="px-2.5 sm:px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wider text-purple-900 hover:text-purple-600 transition-colors">
+        <!-- Right Actions -->
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+            <a href="{% url 'public_order:ticket_select' %}" class="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-purple-700 transition-colors">
                 Tiket
             </a>
 
             {% if session_buyer_phone %}
-            <a href="{% url 'public_order:my_history' %}" class="px-3 py-1.5 text-xs font-black uppercase tracking-wider text-purple-900 bg-purple-100/70 hover:bg-purple-200/80 rounded-xl transition-colors border border-purple-200">
+            <a href="{% url 'public_order:my_history' %}" class="px-3 py-1.5 text-xs font-semibold text-purple-900 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors border border-purple-200">
                 Tiket Saya
             </a>
-            <a href="{% url 'public_order:buyer_logout' %}" title="Keluar" class="px-1.5 py-1 text-xs font-bold text-slate-400 hover:text-red-600 transition-colors">
+            <a href="{% url 'public_order:buyer_logout' %}" title="Keluar" class="px-1.5 py-1 text-xs font-semibold text-slate-400 hover:text-red-600 transition-colors">
                 ✕
             </a>
             {% else %}
-            <a href="{% url 'public_order:buyer_login' %}" class="px-2.5 sm:px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-purple-900 hover:text-purple-600 transition-colors">
+            <a href="{% url 'public_order:buyer_login' %}" class="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-purple-700 transition-colors">
                 Masuk
             </a>
             {% endif %}
 
-            <a href="{% url 'public_order:ticket_select' %}" class="px-4 sm:px-5 py-2 btn-gradient-primary rounded-xl font-black text-xs uppercase tracking-widest active:scale-95 btn-touch">
+            <a href="{% url 'public_order:ticket_select' %}" class="px-4 py-1.5 btn-gradient-primary rounded-lg font-bold text-xs shadow-xs active:scale-95 btn-touch">
                 Beli
             </a>
 
+            <!-- Prominent Panitia Button -->
             {% if request.user.is_authenticated and request.user.is_panitia %}
-            <a href="{% url 'dashboard:index' %}" class="px-2.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100/70 hover:bg-amber-200/80 rounded-xl transition-colors border border-amber-200/80">
-                Panitia
+            <a href="{% url 'dashboard:index' %}" class="px-3 py-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-300 shadow-xs">
+                Dashboard Panitia
             </a>
             {% else %}
-            <a href="{% url 'login' %}" title="Login Panitia" class="px-2 py-1.5 text-[11px] font-bold uppercase text-slate-400 hover:text-slate-700 transition-colors">
-                Panitia
+            <a href="{% url 'login' %}" class="px-3 py-1.5 text-xs font-bold text-purple-900 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors border border-purple-200/80 shadow-xs">
+                Login Panitia
             </a>
             {% endif %}
         </div>

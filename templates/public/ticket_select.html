@@ -6,17 +6,15 @@
 <div class="min-h-screen flex flex-col ambient-canvas text-slate-900 pb-28 sm:pb-16">
     {% include 'public/_nav.html' %}
 
-    <main class="flex-1 max-w-2xl mx-auto w-full px-4 py-8 sm:py-10">
-        <!-- Title -->
+    <main class="flex-1 max-w-xl mx-auto w-full px-4 py-8">
         <div class="mb-6">
-            <h1 class="text-2xl sm:text-3xl font-black uppercase tracking-tight text-purple-950 font-cinema">Pilih Tiket</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-semibold">Pilih jumlah tiket yang ingin Anda beli. Promo bundel 2 tiket dihitung otomatis.</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Pilih Tiket</h1>
         </div>
 
         {% if messages %}
         <div class="mb-6 space-y-2">
             {% for message in messages %}
-            <div class="p-3.5 rounded-xl text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+            <div class="p-3 rounded-xl text-xs font-medium bg-red-50 text-red-700 border border-red-200">
                 {{ message }}
             </div>
             {% endfor %}
@@ -27,31 +25,31 @@
             {% csrf_token %}
             <div class="space-y-4 mb-8">
                 {% for tt in ticket_types %}
-                <div class="card-liz-purple rounded-3xl p-6">
+                <div class="bg-white/90 rounded-2xl p-5 border border-purple-100 shadow-xs">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex-1 min-w-0">
-                            <h3 class="font-black uppercase tracking-tight text-purple-950 text-lg font-cinema mb-1">{{ tt.name }}</h3>
+                            <h3 class="font-bold text-slate-900 text-base mb-1">{{ tt.name }}</h3>
                             {% if tt.description %}
-                            <p class="text-xs text-slate-600 mb-3 font-medium leading-relaxed">{{ tt.description }}</p>
+                            <p class="text-xs text-slate-500 mb-3 font-normal leading-relaxed">{{ tt.description }}</p>
                             {% endif %}
                             
                             <div class="flex flex-wrap items-center gap-2 text-xs">
-                                <span class="font-black text-purple-950 bg-purple-100/70 border border-purple-200/80 px-3 py-1 rounded-lg">
+                                <span class="font-semibold text-slate-800 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-100">
                                     1 Tiket: Rp {{ tt.price|floatformat:0 }}
                                 </span>
-                                <span class="font-black text-amber-900 bg-amber-50 border border-amber-300/80 px-3 py-1 rounded-lg">
+                                <span class="font-semibold text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
                                     Bundel 2 Tiket: Rp {{ tt.bundle_price|floatformat:0 }}
                                 </span>
                             </div>
                         </div>
 
                         <!-- Stepper Counter -->
-                        <div class="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-purple-100">
-                            <span class="text-xs font-bold text-slate-500 uppercase sm:hidden">Jumlah:</span>
-                            <div class="inline-flex items-center rounded-xl bg-purple-50/80 p-1 border border-purple-200 shrink-0">
+                        <div class="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-purple-50">
+                            <span class="text-xs font-medium text-slate-400 sm:hidden">Jumlah:</span>
+                            <div class="inline-flex items-center rounded-xl bg-slate-50 p-1 border border-purple-100 shrink-0">
                                 <button type="button" 
                                     onclick="updateQty('{{ tt.id }}', -1, {{ tt.price }}, {{ tt.bundle_price }})"
-                                    class="w-10 h-10 rounded-lg bg-white text-purple-950 font-black text-base flex items-center justify-center shadow-xs active:scale-90 transition-transform btn-touch hover:bg-purple-100">
+                                    class="w-9 h-9 rounded-lg bg-white text-slate-800 font-bold text-sm flex items-center justify-center shadow-xs active:scale-90 transition-transform btn-touch hover:bg-purple-50">
                                     –
                                 </button>
                                 
@@ -64,11 +62,11 @@
                                     data-price="{{ tt.price }}"
                                     data-bundle="{{ tt.bundle_price }}"
                                     readonly
-                                    class="w-12 text-center bg-transparent font-black text-lg text-purple-950 outline-none font-cinema">
+                                    class="w-10 text-center bg-transparent font-bold text-base text-slate-900 outline-none">
                                 
                                 <button type="button" 
                                     onclick="updateQty('{{ tt.id }}', 1, {{ tt.price }}, {{ tt.bundle_price }})"
-                                    class="w-10 h-10 rounded-lg btn-gradient-primary font-black text-base flex items-center justify-center shadow-xs active:scale-90 transition-transform btn-touch">
+                                    class="w-9 h-9 rounded-lg btn-gradient-primary font-bold text-sm flex items-center justify-center shadow-xs active:scale-90 transition-transform btn-touch">
                                     +
                                 </button>
                             </div>
@@ -76,7 +74,7 @@
                     </div>
                 </div>
                 {% empty %}
-                <div class="bg-white/80 rounded-3xl p-12 border border-purple-200 text-center text-slate-500 font-semibold">
+                <div class="bg-white/80 rounded-2xl p-8 border border-purple-100 text-center text-slate-500 text-sm font-medium">
                     Belum ada tiket tersedia saat ini.
                 </div>
                 {% endfor %}
@@ -84,20 +82,20 @@
 
             <!-- Floating Bottom Cart Bar -->
             {% if ticket_types %}
-            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-purple-200 p-4 shadow-2xl">
-                <div class="max-w-2xl mx-auto flex items-center justify-between gap-4">
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-purple-100 p-4 shadow-lg">
+                <div class="max-w-xl mx-auto flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-[10px] font-extrabold uppercase tracking-widest text-purple-700">Total Pembelian</p>
-                        <p class="text-xl sm:text-2xl font-black text-purple-950 font-cinema" id="total-price-display">Rp 0</p>
-                        <p class="text-xs font-bold text-slate-500" id="total-qty-display">0 Tiket dipilih</p>
+                        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Total Pembelian</p>
+                        <p class="text-xl font-bold text-slate-900" id="total-price-display">Rp 0</p>
+                        <p class="text-xs text-slate-500 font-medium" id="total-qty-display">0 Tiket dipilih</p>
                     </div>
 
                     <button type="submit" 
                         id="submit-btn"
                         disabled
-                        class="px-7 py-3.5 bg-slate-200 text-slate-400 rounded-xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all btn-touch flex items-center gap-2 cursor-not-allowed font-cinema">
+                        class="px-6 py-3 bg-slate-200 text-slate-400 rounded-xl font-bold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed">
                         <span>Lanjutkan</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </div>
@@ -148,10 +146,10 @@ function recalculateCart() {
     if (submitBtn) {
         if (totalQty > 0) {
             submitBtn.disabled = false;
-            submitBtn.className = "px-7 py-3.5 btn-gradient-primary rounded-xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all active:scale-95 btn-touch cursor-pointer flex items-center gap-2 font-cinema";
+            submitBtn.className = "px-6 py-3 btn-gradient-primary rounded-xl font-bold text-xs transition-all active:scale-95 btn-touch cursor-pointer flex items-center gap-2 shadow-xs";
         } else {
             submitBtn.disabled = true;
-            submitBtn.className = "px-7 py-3.5 bg-slate-200 text-slate-400 rounded-xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all btn-touch flex items-center gap-2 cursor-not-allowed font-cinema";
+            submitBtn.className = "px-6 py-3 bg-slate-200 text-slate-400 rounded-xl font-bold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed";
         }
     }
 }
