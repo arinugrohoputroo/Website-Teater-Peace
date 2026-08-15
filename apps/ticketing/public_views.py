@@ -290,13 +290,10 @@ def buyer_login(request):
         phone = request.POST.get('phone', '').strip()
         entered_phone = phone
         if not phone:
-            messages.error(request, 'Masukkan Nomor WhatsApp Anda.')
+            messages.error(request, 'Masukkan nomor WhatsApp Anda.')
             return render(request, 'public/buyer_login.html')
         
-        # Clean phone format
         clean = phone.replace(' ', '').replace('-', '').replace('+', '')
-        
-        # Search DB for matching buyer orders (exact or last 8 digits)
         query = Q(buyer_phone=phone) | Q(buyer_phone=clean)
         if len(clean) >= 8:
             query |= Q(buyer_phone__icontains=clean[-8:])
@@ -306,7 +303,7 @@ def buyer_login(request):
         if not existing_orders.exists():
             messages.error(
                 request, 
-                f'❌ Nomor WhatsApp ({phone}) tidak ditemukan dalam database pesanan. Pastikan Anda memasukkan nomor yang sama saat memesan tiket.'
+                'Nomor WhatsApp ini belum terdaftar pada pesanan manapun. Silakan beli tiket terlebih dahulu.'
             )
             return render(request, 'public/buyer_login.html', {'entered_phone': entered_phone})
         
@@ -318,7 +315,7 @@ def buyer_login(request):
         if latest_order.buyer_email:
             request.session['buyer_email'] = latest_order.buyer_email
         
-        messages.success(request, f'Selamat datang kembali, {latest_order.buyer_name}! Berhasil masuk ke Akun Pembeli.')
+        messages.success(request, f'Selamat datang, {latest_order.buyer_name}.')
         return redirect('public_order:my_history')
 
     return render(request, 'public/buyer_login.html', {'entered_phone': entered_phone})
