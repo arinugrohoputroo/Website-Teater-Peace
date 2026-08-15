@@ -284,3 +284,34 @@ def my_history(request):
         'email': email,
         'searched': bool(phone or email),
     })
+
+
+def buyer_login(request):
+    if request.method == 'POST':
+        phone = request.POST.get('phone', '').strip()
+        if not phone:
+            messages.error(request, 'Masukkan Nomor WhatsApp Anda.')
+            return render(request, 'public/buyer_login.html')
+        
+        request.session['buyer_phone'] = phone
+        request.session['buyer_logged_in'] = True
+        
+        existing_order = Order.objects.filter(buyer_phone=phone).order_by('-created_at').first()
+        if existing_order:
+            request.session['buyer_name'] = existing_order.buyer_name
+            if existing_order.buyer_email:
+                request.session['buyer_email'] = existing_order.buyer_email
+        
+        messages.success(request, f'Selamat datang! Anda berhasil masuk ke Akun Pembeli ({phone}).')
+        return redirect('public_order:my_history')
+
+    return render(request, 'public/buyer_login.html')
+
+
+def buyer_logout(request):
+    request.session.pop('buyer_phone', None)
+    request.session.pop('buyer_logged_in', None)
+    request.session.pop('buyer_name', None)
+    request.session.pop('buyer_email', None)
+    messages.success(request, 'Anda telah keluar dari Akun Pembeli.')
+    return redirect('core:home')

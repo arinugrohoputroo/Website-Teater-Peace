@@ -16,10 +16,21 @@
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <a href="/" class="hidden md:inline-flex px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-primary-700 hover:bg-primary-50/80 rounded-xl transition-colors btn-touch">Home</a>
                 <a href="{% url 'public_order:ticket_select' %}" class="px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-primary-700 hover:bg-primary-50/80 rounded-xl transition-colors btn-touch">Tiket</a>
-                <a href="{% url 'public_order:my_history' %}" class="px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-primary-700 bg-primary-50/80 rounded-xl transition-colors btn-touch">Riwayat Saya</a>
-                <a href="{% url 'public_order:order_status' %}" class="hidden sm:inline-flex px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-primary-700 hover:bg-primary-50/80 rounded-xl transition-colors btn-touch">Cek Status</a>
                 
-                <a href="{% url 'public_order:ticket_select' %}" class="inline-flex px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 rounded-xl transition-all shadow-md shadow-primary-500/20 active:scale-95 btn-touch">
+                {% if session_buyer_phone %}
+                <a href="{% url 'public_order:my_history' %}" class="px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-200/80 rounded-xl transition-colors btn-touch flex items-center gap-1.5">
+                    <span>🎟️ Tiket Saya</span>
+                </a>
+                <a href="{% url 'public_order:buyer_logout' %}" title="Keluar Akun Pembeli" class="p-2 text-xs font-bold text-slate-400 hover:text-red-600 transition-colors btn-touch">
+                    🚪
+                </a>
+                {% else %}
+                <a href="{% url 'public_order:buyer_login' %}" class="px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-bold text-primary-700 bg-primary-50 border border-primary-200/80 hover:bg-primary-100 rounded-xl transition-colors btn-touch flex items-center gap-1">
+                    <span>👤 Masuk</span>
+                </a>
+                {% endif %}
+                
+                <a href="{% url 'public_order:ticket_select' %}" class="hidden sm:inline-flex px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 rounded-xl transition-all shadow-md shadow-primary-500/20 active:scale-95 btn-touch">
                     Beli Tiket
                 </a>
                 
