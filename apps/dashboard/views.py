@@ -6,7 +6,7 @@ from apps.accounts.decorators import panitia_required
 from apps.payments.models import Payment
 from apps.snacks.models import CommitteeMember, SnackClaim, SnackSession
 from apps.ticketing.models import Order, Ticket
-from apps.ticketing.services import MAX_TICKETS, get_quota_summary
+from apps.ticketing.services import get_max_tickets, get_quota_summary
 
 
 @panitia_required
@@ -34,13 +34,14 @@ def index(request):
     revenue = Payment.objects.filter(status='VERIFIED').aggregate(total=Sum('amount')).get('total') or 0
 
     quota = get_quota_summary()
+    max_tickets = get_max_tickets()
 
     context = {
         'total_tickets': quota['total_quota'],
         'tickets_sold': tickets_sold,
         'tickets_remaining': quota['total_remaining'],
-        'id_pool_total': MAX_TICKETS,
-        'id_pool_remaining': max(0, MAX_TICKETS - tickets_sold),
+        'id_pool_total': max_tickets,
+        'id_pool_remaining': max(0, max_tickets - tickets_sold),
         'season_stats': quota['types'],
         'online_sold': online_sold,
         'offline_sold': offline_sold,

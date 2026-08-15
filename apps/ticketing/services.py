@@ -8,7 +8,14 @@ from django.db.models import Count, F, Q, Value, Case, When, IntegerField
 
 from .models import Order, OrderItem, Ticket, TicketType
 
-MAX_TICKETS = 1000
+def get_max_tickets():
+    from apps.core.models import EventConfig
+    try:
+        val = EventConfig.get('max_tickets', '1000')
+        return int(val)
+    except (ValueError, TypeError):
+        return 1000
+
 
 
 def ticket_types_with_stats(*, active_only=False):
@@ -40,13 +47,14 @@ def get_quota_summary():
 
 def normalize_ticket_number(value):
     raw = str(value or '').strip()
+    max_tickets = get_max_tickets()
     if not raw:
         raise ValueError('ID tiket kosong.')
     if not raw.isdigit():
         raise ValueError(f'ID tiket tidak valid: {value}')
     number = int(raw)
-    if number < 1 or number > MAX_TICKETS:
-        raise ValueError(f'ID tiket harus antara 0001 dan {MAX_TICKETS:04d}.')
+    if number < 1 or number > max_tickets:
+        raise ValueError(f'ID tiket harus antara 0001 dan {max_tickets:04d}.')
     return f'{number:04d}'
 
 
@@ -64,10 +72,11 @@ def parse_ticket_numbers(raw):
 
 
 def get_available_ticket_numbers(limit=200):
+    max_tickets = get_max_tickets()
     used = set(
         Ticket.objects.exclude(status=Ticket.Status.CANCELLED).values_list('ticket_number', flat=True)
     )
-    available = [f'{n:04d}' for n in range(1, MAX_TICKETS + 1) if f'{n:04d}' not in used]
+    available = [f'{n:04d}' for n in range(1, max_tickets + 1) if f'{n:04d}' not in used]
     return available[:limit], len(available)
 
 
@@ -91,8 +100,9 @@ def get_next_ticket_number():
 
 
 def validate_ticket_capacity(quantity):
+    max_tickets = get_max_tickets()
     issued = Ticket.objects.exclude(status=Ticket.Status.CANCELLED).count()
-    remaining = MAX_TICKETS - issued
+    remaining = max_tickets - issued
     if quantity > remaining:
         raise ValueError('Tiket sudah habis atau jumlah melebihi stok tersisa.')
     return remaining
@@ -121,10 +131,11 @@ def issue_tickets_for_order(order, operator=None, participant_payloads=None, req
         numbers_queue = list(ticket_numbers)
     else:
         numbers_queue = []
+        max_tickets = get_max_tickets()
         next_number = get_next_ticket_number()
         for _ in range(total_qty):
-            if next_number > MAX_TICKETS:
-                raise ValueError('Nomor tiket melebihi batas maksimum 1000.')
+            if next_number > max_tickets:
+                raise ValueError(f'Nomor tiket melebihi batas maksimum {max_tickets}.')
             numbers_queue.append(f'{next_number:04d}')
             next_number += 1
 
@@ -208,7 +219,8 @@ def create_public_order(*, buyer_name, buyer_email, buyer_phone, items, payment_
 
     total = 0
     created_items = []
-    remaining_global = MAX_TICKETS - Ticket.objects.exclude(status=Ticket.Status.CANCELLED).count()
+    max_tickets = get_max_tickets()
+    remaining_global = max_tickets - Ticket.objects.exclude(status=Ticket.Status.CANCELLED).count()
     for item in items:
         ticket_type = TicketType.objects.select_for_update().get(pk=item['ticket_type'].pk)
         quantity = int(item['quantity'])

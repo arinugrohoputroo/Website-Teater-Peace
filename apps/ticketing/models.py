@@ -230,8 +230,8 @@ class Ticket(models.Model):
         ordering = ['ticket_number']
         constraints = [
             models.CheckConstraint(
-                check=Q(ticket_number__gte='0001') & Q(ticket_number__lte='1000'),
-                name='ticket_number_between_0001_1000',
+                check=Q(ticket_number__gte='0001'),
+                name='ticket_number_gte_0001',
             ),
         ]
 
