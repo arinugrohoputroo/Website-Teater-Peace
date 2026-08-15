@@ -115,6 +115,7 @@ def order_confirm(request, order_number):
             messages.error(request, str(exc))
             return redirect('public_order:ticket_select')
         request.session.pop('cart', None)
+        request.session['buyer_name'] = buyer_name
         request.session['buyer_phone'] = buyer_phone
         request.session['buyer_email'] = buyer_email
         return redirect('public_order:order_confirm', order_number=order.order_number)
@@ -274,6 +275,8 @@ def my_history(request):
             request.session['buyer_phone'] = phone
         if email:
             request.session['buyer_email'] = email
+        if orders and getattr(orders[0], 'buyer_name', None):
+            request.session['buyer_name'] = orders[0].buyer_name
 
     return render(request, 'public/my_history.html', {
         'orders': orders,

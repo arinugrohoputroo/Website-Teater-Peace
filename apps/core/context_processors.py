@@ -9,4 +9,7 @@ def event_context(request):
         'event_venue': EventConfig.get('event_venue', ''),
         'event_contact': EventConfig.get('event_contact', '085712089906 (Ari Nugroho)'),
         'google_client_id': getattr(settings, 'GOOGLE_CLIENT_ID', ''),
+        'session_buyer_name': request.session.get('buyer_name', ''),
+        'session_buyer_phone': request.session.get('buyer_phone', ''),
+        'session_buyer_email': request.session.get('buyer_email', ''),
     }
