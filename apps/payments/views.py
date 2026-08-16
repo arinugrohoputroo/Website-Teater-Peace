@@ -46,11 +46,11 @@ def payment_verify(request, pk):
             'existing_tickets': existing_tickets,
             'available_preview': [],
             'available_total': 0,
-            'available_more': 0,
+            'available_has_more': False,
         })
 
     needed_qty = payment.order.quantity
-    available_preview, available_total = get_available_ticket_numbers(limit=150)
+    available_preview, available_total, available_has_more = get_available_ticket_numbers(limit=150)
     return render(request, 'payments/verify.html', {
         'payment': payment,
         'needed_qty': needed_qty,
@@ -58,7 +58,7 @@ def payment_verify(request, pk):
         'existing_tickets': [],
         'available_preview': available_preview,
         'available_total': available_total,
-        'available_more': max(0, available_total - len(available_preview)),
+        'available_has_more': available_has_more,
     })
 
 

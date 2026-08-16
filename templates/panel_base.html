@@ -1,118 +1,214 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    .panel-shell { background: #f4f2ec; }
+
+    .panel-header {
+        background: rgba(255, 255, 255, 0.92);
+        border-bottom: 1px solid rgba(26, 39, 68, 0.08);
+    }
+
+    .panel-sidebar {
+        background: linear-gradient(180deg, #1a2744 0%, #121c33 100%);
+        border-right: 1px solid rgba(245, 197, 24, 0.12);
+    }
+
+    .panel-sidebar-brand {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.12);
+    }
+
+    .panel-user-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-section {
+        display: block;
+        padding: 1.25rem 1rem 0.35rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(245, 197, 24, 0.55);
+        line-height: 1.2;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.875rem;
+        margin: 0.125rem 0.5rem;
+        border-radius: 0.75rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.72);
+        transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+        text-decoration: none;
+        line-height: 1.25;
+    }
+    .sidebar-link svg { opacity: 0.75; flex-shrink: 0; }
+    .sidebar-link:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+    }
+    .sidebar-link:hover svg { opacity: 1; }
+    .sidebar-link.active {
+        background: linear-gradient(135deg, rgba(245, 197, 24, 0.18) 0%, rgba(245, 197, 24, 0.08) 100%);
+        color: #fef3c7;
+        box-shadow: inset 0 0 0 1px rgba(245, 197, 24, 0.22);
+    }
+    .sidebar-link.active svg { opacity: 1; color: #f5c518; }
+
+    .panel-card {
+        background: #ffffff;
+        border: 1px solid rgba(26, 39, 68, 0.08);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03), 0 8px 24px -8px rgba(26, 39, 68, 0.07);
+    }
+
+    .panel-bottom-nav {
+        background: rgba(255, 255, 255, 0.94);
+        border-top: 1px solid rgba(26, 39, 68, 0.08);
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-<div class="min-h-full flex flex-col bg-slate-50" id="app">
-    <!-- Top Fixed Header -->
-    <header class="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 px-4 py-3 flex items-center justify-between shadow-sm">
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-700 active:scale-95 transition-all btn-touch" aria-label="Menu">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
-            </button>
-            <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-primary-600 animate-pulse"></span>
-                <span class="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight truncate max-w-[200px] sm:max-w-xs">{{ event_name }}</span>
+<div class="min-h-full panel-shell" id="app">
+    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-navy-950/50 backdrop-blur-sm z-40 transition-opacity lg:hidden" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="panel-sidebar fixed inset-y-0 left-0 z-50 w-72 -translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
+        <div class="panel-sidebar-brand px-4 py-5 shrink-0">
+            <div class="flex items-center gap-3">
+                <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}" class="w-11 h-11 rounded-full object-cover shrink-0" style="box-shadow: 0 0 0 2px rgba(245,197,24,0.35);">
+                <div class="min-w-0">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest text-gold-400/80">Teater Peace</p>
+                    <p class="font-display text-base font-semibold text-white leading-tight truncate">Gelar Karya Ke-28</p>
+                </div>
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-primary-600 to-primary-800 text-white flex items-center justify-center text-xs font-black shadow-md shadow-primary-500/20 ring-2 ring-primary-100">
-                {{ request.user.name|truncatechars:2|upper }}
+        <div class="px-4 py-3 shrink-0">
+            <div class="panel-user-card rounded-xl px-3 py-2.5">
+                <p class="text-[10px] font-semibold uppercase tracking-wider text-white/40">Akun Panitia</p>
+                <p class="text-sm font-semibold text-white truncate mt-0.5">{{ request.user.name }}</p>
+                <span class="inline-block mt-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-gold-400/15 text-gold-300 border border-gold-400/20">
+                    {{ request.user.get_role_display }}
+                </span>
             </div>
         </div>
-    </header>
 
-    <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 transition-opacity" onclick="toggleSidebar()"></div>
-
-    <!-- Sidebar Navigation -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200/80 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col pt-16 shadow-2xl">
-        <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
-            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Akun Panitia</p>
-            <p class="text-base font-extrabold text-slate-900 truncate mt-0.5">{{ request.user.name }}</p>
-            <span class="inline-block px-2.5 py-0.5 mt-1 rounded-full text-[10px] font-bold bg-primary-100 text-primary-800 border border-primary-200">
-                {{ request.user.get_role_display }}
-            </span>
-        </div>
-
-        <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav class="flex-1 overflow-y-auto pb-4">
             <a href="{% url 'dashboard:index' %}" class="sidebar-link {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                 <span>Dashboard</span>
             </a>
 
-            <p class="px-3 pt-4 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Modul Tiket</p>
+            <span class="sidebar-section">Tiket</span>
             <a href="{% url 'ticketing:list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'order_detail' %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 <span>Daftar Order</span>
             </a>
             <a href="{% url 'ticketing:offline_sale' %}" class="sidebar-link {% if request.resolver_match.url_name == 'offline_sale' %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                 <span>Kasir Offline</span>
             </a>
             <a href="{% url 'ticketing:tickets' %}" class="sidebar-link {% if request.resolver_match.url_name == 'tickets' or request.resolver_match.url_name == 'ticket_detail' %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z"/></svg>
                 <span>ID Pool Tiket</span>
             </a>
             <a href="{% url 'ticketing:collection' %}" class="sidebar-link {% if request.resolver_match.url_name == 'collection' %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                <span>Pengambilan (Collection)</span>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                <span>Pengambilan Tiket</span>
             </a>
 
-            <p class="px-3 pt-4 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Keuangan & Modul</p>
+            <span class="sidebar-section">Keuangan</span>
             <a href="{% url 'payments:list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'payments' and request.resolver_match.url_name == 'list' %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                 <span>Verifikasi Pembayaran</span>
             </a>
 
-            <p class="px-3 pt-4 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Snack Panitia</p>
+            <span class="sidebar-section">Snack</span>
             <a href="{% url 'snacks:list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'snacks' and 'committee' not in request.path %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2a1 1 0 001-1v-5a1 1 0 00-1-1h-3m-6 0H4a1 1 0 00-1 1v5a1 1 0 001 1h2m6-10V4m0 0L9 7m3-3l3 3"/></svg>
-                <span>Sesi & Scanner Snack</span>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2a1 1 0 001-1v-5a1 1 0 00-1-1h-3m-6 0H4a1 1 0 00-1 1v5a1 1 0 001 1h2m6-10V4m0 0L9 7m3-3l3 3"/></svg>
+                <span>Sesi &amp; Scanner</span>
             </a>
             {% if request.user.is_admin %}
             <a href="{% url 'snacks:committee_list' %}" class="sidebar-link {% if 'committee' in request.path %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 <span>Anggota Panitia</span>
             </a>
             {% endif %}
 
-            <a href="{% url 'reports:index' %}" class="sidebar-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %} mt-2">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span class="sidebar-section">Laporan</span>
+            <a href="{% url 'reports:index' %}" class="sidebar-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span>Laporan Sales</span>
             </a>
 
             {% if request.user.is_admin %}
-            <p class="px-3 pt-4 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pengaturan Admin</p>
+            <span class="sidebar-section">Pengaturan</span>
             <a href="{% url 'ticketing:ticket_types' %}" class="sidebar-link {% if 'ticket-types' in request.path %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>Jenis Tiket (Kuota)</span>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>Jenis Tiket</span>
             </a>
             <a href="{% url 'payments:methods' %}" class="sidebar-link {% if 'methods' in request.path %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                 <span>Metode Pembayaran</span>
             </a>
             <a href="{% url 'accounts:staff_list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'accounts' %}active{% endif %}">
-                <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 <span>Kelola Staff</span>
             </a>
             {% endif %}
         </nav>
 
-        <div class="p-3 border-t border-slate-100">
+        <div class="p-3 border-t border-white/8 shrink-0">
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
-                <button type="submit" class="w-full text-center text-sm font-bold text-red-600 hover:text-red-700 py-2.5 rounded-xl hover:bg-red-50 transition-colors btn-touch">Logout</button>
+                <button type="submit" class="w-full flex items-center justify-center gap-2 text-sm font-semibold text-red-300 hover:text-red-200 py-2.5 rounded-xl hover:bg-red-500/10 transition-colors btn-touch">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                </button>
             </form>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main id="main-content" class="flex-1 min-w-0 w-full mt-14 mb-20 lg:mb-6 transition-all duration-300">
+    <div id="panel-main" class="min-h-full flex flex-col transition-all duration-300">
+        <header class="panel-header sticky top-0 z-30 px-4 h-14 flex items-center justify-between backdrop-blur-xl shrink-0">
+            <div class="flex items-center gap-3 min-w-0">
+                <button type="button" onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-navy-50 text-navy-700 active:scale-95 transition-all btn-touch shrink-0 lg:hidden" aria-label="Menu">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}" class="w-8 h-8 rounded-full object-cover logo-ring shrink-0 hidden sm:block">
+                    <div class="min-w-0">
+                        <p class="font-display text-sm font-semibold text-navy-800 truncate leading-tight">Panel Panitia</p>
+                        <p class="text-[10px] text-gold-600 truncate italic">Gelar Karya Ke-28</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="hidden sm:block text-right mr-1">
+                    <p class="text-xs font-semibold text-navy-800 truncate max-w-[120px]">{{ request.user.name }}</p>
+                    <p class="text-[10px] text-navy-400">{{ request.user.get_role_display }}</p>
+                </div>
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 text-navy-950 flex items-center justify-center text-xs font-bold shadow-sm">
+                    {{ request.user.name|truncatechars:2|upper }}
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="flex-1 min-w-0 w-full mb-20 lg:mb-6">
         <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
             {% if messages %}
             <div class="mb-6 space-y-2">
                 {% for message in messages %}
-                <div class="p-4 rounded-2xl text-sm font-semibold shadow-sm {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200/80{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200/80{% else %}bg-sky-50 text-sky-800 border border-sky-200/80{% endif %}">
+                <div class="p-4 rounded-2xl text-sm font-semibold panel-card {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200/80{% elif message.tags == 'error' %}bg-red-50 text-red-800 border-red-200/80{% else %}bg-sky-50 text-sky-800 border-sky-200/80{% endif %}">
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -121,30 +217,29 @@
 
             {% block content %}{% endblock %}
         </div>
-    </main>
+        </main>
 
-    <!-- Mobile Bottom Quick Staff Navigation Bar -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/90 backdrop-blur-xl border-t border-slate-200/80 px-2 py-1.5 shadow-2xl">
+        <div class="panel-bottom-nav lg:hidden fixed bottom-0 left-0 right-0 z-30 px-2 py-1.5 backdrop-blur-xl">
         <div class="grid grid-cols-5 gap-1 text-center">
-            <a href="{% url 'dashboard:index' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.app_name == 'dashboard' %}text-primary-700 bg-primary-50{% else %}text-slate-500 hover:text-slate-900{% endif %} btn-touch">
+            <a href="{% url 'dashboard:index' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.app_name == 'dashboard' %}text-navy-800 bg-gold-100/80{% else %}text-navy-400{% endif %} btn-touch">
                 <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                <span>Home</span>
+                Home
             </a>
-            <a href="{% url 'ticketing:list' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'order_detail' %}text-primary-700 bg-primary-50{% else %}text-slate-500 hover:text-slate-900{% endif %} btn-touch">
+            <a href="{% url 'ticketing:list' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'order_detail' %}text-navy-800 bg-gold-100/80{% else %}text-navy-400{% endif %} btn-touch">
                 <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                <span>Order</span>
+                Order
             </a>
-            <a href="{% url 'ticketing:offline_sale' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.url_name == 'offline_sale' %}text-primary-700 bg-primary-50{% else %}text-slate-500 hover:text-slate-900{% endif %} btn-touch">
+            <a href="{% url 'ticketing:offline_sale' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.url_name == 'offline_sale' %}text-navy-800 bg-gold-100/80{% else %}text-navy-400{% endif %} btn-touch">
                 <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                <span>Kasir</span>
+                Kasir
             </a>
-            <a href="{% url 'payments:list' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.app_name == 'payments' %}text-primary-700 bg-primary-50{% else %}text-slate-500 hover:text-slate-900{% endif %} btn-touch">
+            <a href="{% url 'payments:list' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.app_name == 'payments' %}text-navy-800 bg-gold-100/80{% else %}text-navy-400{% endif %} btn-touch">
                 <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                <span>Bayar</span>
+                Bayar
             </a>
-            <a href="{% url 'snacks:list' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.app_name == 'snacks' %}text-primary-700 bg-primary-50{% else %}text-slate-500 hover:text-slate-900{% endif %} btn-touch">
+            <a href="{% url 'snacks:list' %}" class="flex flex-col items-center py-1.5 px-1 rounded-xl text-[10px] font-bold {% if request.resolver_match.app_name == 'snacks' %}text-navy-800 bg-gold-100/80{% else %}text-navy-400{% endif %} btn-touch">
                 <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2a1 1 0 001-1v-5a1 1 0 00-1-1h-3m-6 0H4a1 1 0 00-1 1v5a1 1 0 001 1h2m6-10V4m0 0L9 7m3-3l3 3"/></svg>
-                <span>Snack</span>
+                Snack
             </a>
         </div>
     </div>
@@ -156,15 +251,15 @@ function isDesktop() { return window.matchMedia('(min-width: 1024px)').matches; 
 function setSidebarOpen(open) {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    const main = document.getElementById('main-content');
+    const panelMain = document.getElementById('panel-main');
     if (open) {
         sidebar.classList.remove('-translate-x-full');
         if (!isDesktop()) overlay.classList.remove('hidden');
-        if (isDesktop()) main.classList.add('lg:ml-72');
+        if (isDesktop()) panelMain.classList.add('lg:ml-72');
     } else {
         sidebar.classList.add('-translate-x-full');
         overlay.classList.add('hidden');
-        main.classList.remove('lg:ml-72');
+        panelMain.classList.remove('lg:ml-72');
     }
     localStorage.setItem(SIDEBAR_KEY, open ? 'open' : 'closed');
 }

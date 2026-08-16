@@ -6,15 +6,16 @@
 <div class="min-h-screen flex flex-col ambient-canvas text-slate-900 pb-28 sm:pb-16">
     {% include 'public/_nav.html' %}
 
-    <main class="flex-1 max-w-xl mx-auto w-full px-4 py-8">
-        <div class="mb-6">
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Pilih Tiket</h1>
+    <main class="flex-1 max-w-xl mx-auto w-full px-4 py-8 sm:py-10">
+        <div class="mb-8 animate-on-load animate-fade-up">
+            <p class="section-label mb-1.5">Langkah 1</p>
+            <h1 class="page-header-title text-2xl sm:text-3xl text-slate-900">Pilih Tiket</h1>
         </div>
 
         {% if messages %}
-        <div class="mb-6 space-y-2">
+        <div class="mb-6 space-y-2 animate-on-load animate-fade-up">
             {% for message in messages %}
-            <div class="p-3 rounded-xl text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+            <div class="p-3.5 rounded-xl text-xs font-medium bg-red-50/80 text-red-700 border border-red-200/60 backdrop-blur-sm">
                 {{ message }}
             </div>
             {% endfor %}
@@ -25,48 +26,47 @@
             {% csrf_token %}
             <div class="space-y-4 mb-8">
                 {% for tt in ticket_types %}
-                <div class="bg-white/90 rounded-2xl p-5 border border-purple-100 shadow-xs">
+                <div class="surface-card rounded-2xl p-5 sm:p-6 animate-on-load animate-fade-up" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex-1 min-w-0">
                             <h3 class="font-bold text-slate-900 text-base mb-1">{{ tt.name }}</h3>
                             {% if tt.description %}
-                            <p class="text-xs text-slate-500 mb-3 font-normal leading-relaxed">{{ tt.description }}</p>
+                            <p class="text-xs text-slate-500 mb-3 leading-relaxed">{{ tt.description }}</p>
                             {% endif %}
-                            
+
                             <div class="flex flex-wrap items-center gap-2 text-xs">
-                                <span class="font-semibold text-slate-800 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-100">
+                                <span class="font-semibold text-slate-700 bg-purple-50/80 px-2.5 py-1 rounded-lg border border-purple-100/60 tabular-nums">
                                     1 Tiket: Rp {{ tt.price|floatformat:0 }}
                                 </span>
-                                <span class="font-semibold text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
-                                    Bundel 2 Tiket: Rp {{ tt.bundle_price|floatformat:0 }}
+                                <span class="font-semibold text-amber-900 bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200/50 tabular-nums">
+                                    Bundel 2: Rp {{ tt.bundle_price|floatformat:0 }}
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Stepper Counter -->
-                        <div class="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-purple-50">
-                            <span class="text-xs font-medium text-slate-400 sm:hidden">Jumlah:</span>
-                            <div class="inline-flex items-center rounded-xl bg-slate-50 p-1 border border-purple-100 shrink-0">
-                                <button type="button" 
+                        <div class="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-purple-100/50">
+                            <span class="text-xs font-medium text-slate-400 sm:hidden">Jumlah</span>
+                            <div class="inline-flex items-center rounded-xl bg-slate-50/80 p-1 border border-purple-100/50 shrink-0">
+                                <button type="button"
                                     onclick="updateQty('{{ tt.id }}', -1, {{ tt.price }}, {{ tt.bundle_price }})"
-                                    class="w-9 h-9 rounded-lg bg-white text-slate-800 font-bold text-sm flex items-center justify-center shadow-xs active:scale-90 transition-transform btn-touch hover:bg-purple-50">
+                                    class="w-10 h-10 rounded-lg bg-white text-slate-700 font-bold text-sm flex items-center justify-center shadow-sm active:scale-90 transition-all btn-touch hover:bg-purple-50 hover:text-purple-800">
                                     –
                                 </button>
-                                
-                                <input type="number" 
+
+                                <input type="number"
                                     id="qty_input_{{ tt.id }}"
-                                    name="qty_{{ tt.id }}" 
-                                    value="0" 
-                                    min="0" 
+                                    name="qty_{{ tt.id }}"
+                                    value="0"
+                                    min="0"
                                     max="20"
                                     data-price="{{ tt.price }}"
                                     data-bundle="{{ tt.bundle_price }}"
                                     readonly
-                                    class="w-10 text-center bg-transparent font-bold text-base text-slate-900 outline-none">
-                                
-                                <button type="button" 
+                                    class="w-11 text-center bg-transparent font-bold text-base text-slate-900 outline-none tabular-nums">
+
+                                <button type="button"
                                     onclick="updateQty('{{ tt.id }}', 1, {{ tt.price }}, {{ tt.bundle_price }})"
-                                    class="w-9 h-9 rounded-lg btn-gradient-primary font-bold text-sm flex items-center justify-center shadow-xs active:scale-90 transition-transform btn-touch">
+                                    class="w-10 h-10 rounded-lg btn-gradient-primary font-bold text-sm flex items-center justify-center btn-touch">
                                     +
                                 </button>
                             </div>
@@ -74,26 +74,25 @@
                     </div>
                 </div>
                 {% empty %}
-                <div class="bg-white/80 rounded-2xl p-8 border border-purple-100 text-center text-slate-500 text-sm font-medium">
+                <div class="surface-card rounded-2xl p-10 text-center text-slate-500 text-sm">
                     Belum ada tiket tersedia saat ini.
                 </div>
                 {% endfor %}
             </div>
 
-            <!-- Floating Bottom Cart Bar -->
             {% if ticket_types %}
-            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-purple-100 p-4 shadow-lg">
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-t border-purple-100/60 p-4 shadow-glow-soft">
                 <div class="max-w-xl mx-auto flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Total Pembelian</p>
-                        <p class="text-xl font-bold text-slate-900" id="total-price-display">Rp 0</p>
-                        <p class="text-xs text-slate-500 font-medium" id="total-qty-display">0 Tiket dipilih</p>
+                        <p class="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Total</p>
+                        <p class="text-xl font-bold text-slate-900 tabular-nums" id="total-price-display">Rp 0</p>
+                        <p class="text-xs text-slate-500" id="total-qty-display">0 tiket dipilih</p>
                     </div>
 
-                    <button type="submit" 
+                    <button type="submit"
                         id="submit-btn"
                         disabled
-                        class="px-6 py-3 bg-slate-200 text-slate-400 rounded-xl font-bold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed">
+                        class="px-7 py-3.5 bg-slate-200 text-slate-400 rounded-xl font-semibold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed">
                         <span>Lanjutkan</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
@@ -141,15 +140,15 @@ function recalculateCart() {
     const submitBtn = document.getElementById('submit-btn');
 
     if (displayPrice) displayPrice.textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
-    if (displayQty) displayQty.textContent = totalQty + ' Tiket dipilih';
+    if (displayQty) displayQty.textContent = totalQty + ' tiket dipilih';
 
     if (submitBtn) {
         if (totalQty > 0) {
             submitBtn.disabled = false;
-            submitBtn.className = "px-6 py-3 btn-gradient-primary rounded-xl font-bold text-xs transition-all active:scale-95 btn-touch cursor-pointer flex items-center gap-2 shadow-xs";
+            submitBtn.className = "px-7 py-3.5 btn-gradient-primary rounded-xl font-semibold text-xs transition-all btn-touch cursor-pointer flex items-center gap-2";
         } else {
             submitBtn.disabled = true;
-            submitBtn.className = "px-6 py-3 bg-slate-200 text-slate-400 rounded-xl font-bold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed";
+            submitBtn.className = "px-7 py-3.5 bg-slate-200 text-slate-400 rounded-xl font-semibold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed";
         }
     }
 }

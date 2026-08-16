@@ -9,12 +9,17 @@ from django.db.models import Count, F, Q, Value, Case, When, IntegerField
 from .models import Order, OrderItem, Ticket, TicketType
 
 def get_max_tickets():
+    """Ukuran pool ID tiket (0001..N), mengikuti total kuota season jika tidak dikonfigurasi."""
     from apps.core.models import EventConfig
     try:
-        val = EventConfig.get('max_tickets', '99999')
-        return int(val)
+        val = EventConfig.get('max_tickets', '')
+        if str(val).strip():
+            configured = int(val)
+            if configured > 0:
+                return configured
     except (ValueError, TypeError):
-        return 99999
+        pass
+    return max(0, get_quota_summary()['total_quota'])
 
 
 
@@ -71,13 +76,60 @@ def parse_ticket_numbers(raw):
     return parts
 
 
-def get_available_ticket_numbers(limit=200):
-    max_tickets = get_max_tickets()
-    used = set(
+def _used_ticket_numbers():
+    return set(
         Ticket.objects.exclude(status=Ticket.Status.CANCELLED).values_list('ticket_number', flat=True)
     )
-    available = [f'{n:04d}' for n in range(1, max_tickets + 1) if f'{n:04d}' not in used]
-    return available[:limit], len(available)
+
+
+def _ticket_number_matches_search(num, search_digits):
+    if not search_digits:
+        return True
+    padded = search_digits.zfill(4)
+    if num == padded:
+        return True
+    if len(search_digits) < 4:
+        return num.startswith(search_digits.zfill(4)[: len(search_digits)])
+    return False
+
+
+def count_available_ticket_numbers(search=''):
+    max_tickets = get_max_tickets()
+    used = _used_ticket_numbers()
+    search_digits = ''.join(c for c in (search or '') if c.isdigit())
+    if not search_digits:
+        return sum(1 for n in range(1, max_tickets + 1) if f'{n:04d}' not in used)
+    return sum(
+        1 for n in range(1, max_tickets + 1)
+        if f'{n:04d}' not in used and _ticket_number_matches_search(f'{n:04d}', search_digits)
+    )
+
+
+def get_available_ticket_numbers(limit=200, offset=0, search=''):
+    max_tickets = get_max_tickets()
+    used = _used_ticket_numbers()
+    search_digits = ''.join(c for c in (search or '') if c.isdigit())
+    limit = max(1, min(int(limit or 200), 500))
+    offset = max(0, int(offset or 0))
+
+    results = []
+    skipped = 0
+    for n in range(1, max_tickets + 1):
+        num = f'{n:04d}'
+        if num in used:
+            continue
+        if not _ticket_number_matches_search(num, search_digits):
+            continue
+        if skipped < offset:
+            skipped += 1
+            continue
+        results.append(num)
+        if len(results) >= limit:
+            break
+
+    total = count_available_ticket_numbers(search=search)
+    has_more = (offset + len(results)) < total
+    return results, total, has_more
 
 
 def validate_ticket_numbers(ticket_numbers):

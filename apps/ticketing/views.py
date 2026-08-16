@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.accounts.decorators import admin_required, module_required
 from apps.core.models import log_action
@@ -203,7 +204,7 @@ def offline_sale(request):
 
     ticket_types = TicketType.objects.filter(active=True).order_by('name')
     payment_methods = PaymentMethod.objects.filter(active=True).order_by('name')
-    available_preview, available_total = get_available_ticket_numbers(limit=120)
+    available_preview, available_total, available_has_more = get_available_ticket_numbers(limit=150)
 
     if request.method == 'POST':
         buyer_name = request.POST.get('buyer_name', '').strip()
@@ -253,7 +254,29 @@ def offline_sale(request):
         'payment_methods': payment_methods,
         'available_preview': available_preview,
         'available_total': available_total,
-        'available_more': max(0, available_total - len(available_preview)),
+        'available_has_more': available_has_more,
+    })
+
+
+@module_required('ticketing')
+@require_GET
+def available_ticket_ids_api(request):
+    try:
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 200))
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Parameter tidak valid.'}, status=400)
+    search = request.GET.get('q', '').strip()
+    ids, total, has_more = get_available_ticket_numbers(
+        limit=limit, offset=offset, search=search,
+    )
+    return JsonResponse({
+        'ids': ids,
+        'offset': offset,
+        'limit': limit,
+        'total': total,
+        'has_more': has_more,
+        'search': search,
     })
 
 

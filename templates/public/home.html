@@ -1,87 +1,98 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ event_name }} — Portal Tiket Resmi{% endblock %}
+{% block title %}Gelar Karya Teater Peace Ke-28 — Portal Tiket Resmi{% endblock %}
 
 {% block body %}
-<div class="min-h-screen flex flex-col ambient-canvas text-slate-900 relative overflow-x-hidden">
+<div class="min-h-screen flex flex-col ambient-canvas text-navy-900 relative overflow-x-hidden">
+    <div class="ambient-orb w-72 h-72 bg-gold-300/30 top-16 -left-24"></div>
+    <div class="ambient-orb w-80 h-80 bg-navy-200/40 top-32 -right-28" style="animation-delay: -4s;"></div>
+
     {% include 'public/_nav.html' %}
 
-    <!-- Hero Section (Cinematic & Elegant) -->
-    <section class="relative z-10 flex-1 flex items-center justify-center px-4 py-12 sm:py-16">
-        <div class="text-center max-w-2xl mx-auto">
-            <!-- Event Logo -->
-            <div class="relative w-28 h-28 sm:w-36 sm:h-36 mx-auto mb-6 group">
-                <div class="absolute inset-0 bg-gradient-to-tr from-purple-400 to-amber-300 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity"></div>
-                <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}" class="relative w-full h-full rounded-full object-cover border-2 border-white shadow-lg group-hover:scale-105 transition-transform duration-300">
-            </div>
+    <section class="relative z-10 flex-1 flex items-center justify-center px-4 py-14 sm:py-20">
+        <div class="text-center max-w-2xl mx-auto w-full">
 
-            <!-- Event Badge -->
-            <span class="inline-block px-3.5 py-1 rounded-full bg-purple-100/80 border border-purple-200 text-xs font-semibold text-purple-900 mb-4">
+            <p class="animate-on-load animate-fade-up font-display text-xl sm:text-3xl md:text-4xl font-semibold text-navy-800 leading-snug tracking-tight mb-1">
                 Gelar Karya Teater Peace Ke-28
-            </span>
+            </p>
+            <p class="animate-on-load animate-fade-up text-sm sm:text-base font-display italic text-gold-600 mb-6 sm:mb-8">
+                Mengukir Mimpi
+            </p>
 
-            <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-slate-900 mb-4">
-                {{ event_name }}
-            </h1>
-            
-            <div class="inline-flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm font-medium text-slate-700 mb-8 bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-xl border border-purple-100 shadow-xs">
-                <span>{{ event_date|default:"Tanggal akan diumumkan" }}</span>
-                <span class="text-slate-300">•</span>
-                <span>{{ event_venue|default:"Lokasi akan diumumkan" }}</span>
+            <div class="animate-on-load animate-fade-up-delay relative w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-8 group">
+                <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-gold-300/40 via-amber-200/30 to-navy-200/20 blur-2xl animate-shimmer"></div>
+                <img src="{% static 'img/logo-event.png' %}" alt="{{ event_name }}"
+                    class="relative w-full h-full rounded-full object-cover logo-ring group-hover:scale-[1.03] transition-transform duration-500 ease-out">
             </div>
 
-            <div class="flex justify-center px-4">
-                <a href="{% url 'public_order:ticket_select' %}" class="w-full sm:w-auto px-8 py-3.5 btn-gradient-primary rounded-xl text-sm font-bold shadow-md active:scale-95 flex items-center justify-center gap-2 btn-touch">
+            <div class="animate-on-load animate-fade-up-delay-2 inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-sm text-navy-600 mb-8">
+                <span class="inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    {{ event_date|default:"Tanggal akan diumumkan" }}
+                </span>
+                <span class="hidden sm:inline text-navy-200">|</span>
+                <span class="inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    {{ event_venue|default:"Lokasi akan diumumkan" }}
+                </span>
+            </div>
+
+            <div class="animate-on-load animate-fade-up-delay-3 flex justify-center px-4">
+                <a href="{% url 'public_order:ticket_select' %}"
+                    class="group w-full sm:w-auto px-10 py-4 btn-gradient-primary rounded-2xl text-sm tracking-wide flex items-center justify-center gap-2.5 btn-touch">
                     <span>Beli Tiket Sekarang</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Ticket Categories Section -->
-    <section class="relative z-10 max-w-5xl mx-auto w-full px-4 py-10">
-        <div class="flex items-center justify-between gap-4 mb-6 border-b border-purple-100 pb-3">
-            <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Kategori Tiket</h2>
-            <a href="{% url 'public_order:ticket_select' %}" class="text-xs font-semibold text-purple-700 hover:text-purple-900 transition-colors">
-                Pilih Tiket &rarr;
+    <section class="relative z-10 max-w-5xl mx-auto w-full px-4 pb-16 sm:pb-20">
+        <div class="flex items-end justify-between gap-4 mb-8">
+            <div>
+                <p class="section-label mb-1.5">Tiket</p>
+                <h2 class="page-header-title text-2xl sm:text-3xl">Kategori Tiket</h2>
+            </div>
+            <a href="{% url 'public_order:ticket_select' %}" class="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-navy-700 hover:text-navy-900 transition-colors nav-link pb-0.5">
+                Lihat Semua
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {% for tt in ticket_types %}
             {% if tt.remaining > 0 %}
-            <div class="bg-white/90 rounded-2xl p-5 border border-purple-100 shadow-xs hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between group">
+            <div class="surface-card surface-card-interactive rounded-2xl p-5 sm:p-6 flex flex-col justify-between group">
                 <div>
-                    <div class="flex items-start justify-between gap-2 mb-2">
-                        <h3 class="text-base font-bold text-slate-900 group-hover:text-purple-700 transition-colors">{{ tt.name }}</h3>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                        <h3 class="text-base font-bold text-navy-900 group-hover:text-navy-700 transition-colors duration-300">{{ tt.name }}</h3>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50/80 text-emerald-700 border border-emerald-200/60 shrink-0">
                             Tersedia
                         </span>
                     </div>
                     {% if tt.description %}
-                    <p class="text-xs text-slate-500 mb-4 leading-relaxed font-normal">{{ tt.description }}</p>
+                    <p class="text-xs text-navy-500/80 mb-4 leading-relaxed">{{ tt.description }}</p>
                     {% endif %}
                 </div>
 
-                <div class="pt-3 border-t border-purple-50">
-                    <div class="flex items-baseline justify-between mb-1.5">
-                        <span class="text-xs text-slate-500 font-medium">1 Tiket</span>
-                        <span class="text-lg font-bold text-slate-900">Rp {{ tt.price|floatformat:0 }}</span>
+                <div class="pt-4 border-t border-navy-100/60">
+                    <div class="flex items-baseline justify-between mb-2">
+                        <span class="text-xs text-navy-400 font-medium">1 Tiket</span>
+                        <span class="text-lg font-bold text-navy-900 tabular-nums">Rp {{ tt.price|floatformat:0 }}</span>
                     </div>
-                    <div class="flex items-baseline justify-between mb-4 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200/80">
-                        <span class="text-xs font-semibold text-amber-900">Bundel 2 Tiket</span>
-                        <span class="text-xs font-bold text-amber-900">Rp {{ tt.bundle_price|floatformat:0 }}</span>
+                    <div class="flex items-baseline justify-between mb-5 px-3 py-2 rounded-xl bg-gold-50/80 border border-gold-200/50">
+                        <span class="text-xs font-semibold text-navy-800/70">Bundel 2 Tiket</span>
+                        <span class="text-xs font-bold text-navy-900 tabular-nums">Rp {{ tt.bundle_price|floatformat:0 }}</span>
                     </div>
-                    <a href="{% url 'public_order:ticket_select' %}" class="w-full py-2.5 btn-gradient-primary rounded-xl text-xs font-bold text-center block shadow-xs active:scale-95 btn-touch">
-                        Pesan
+                    <a href="{% url 'public_order:ticket_select' %}" class="w-full py-2.5 btn-gradient-primary rounded-xl text-xs text-center block btn-touch">
+                        Pesan Tiket
                     </a>
                 </div>
             </div>
             {% endif %}
             {% empty %}
-            <div class="col-span-full bg-white/80 rounded-2xl p-8 border border-purple-100 text-center text-slate-500 text-sm font-medium">
+            <div class="col-span-full surface-card rounded-2xl p-10 text-center text-navy-500 text-sm">
                 Belum ada tiket tersedia saat ini.
             </div>
             {% endfor %}

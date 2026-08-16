@@ -5,31 +5,31 @@
 {% block content %}
 <div class="max-w-3xl">
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Penjualan Offline</h1>
-        <p class="text-gray-500 mt-1">Input ID tiket fisik yang dijual. Tersedia {{ available_total }} ID.</p>
+        <h1 class="page-header-title text-2xl text-navy-900">Penjualan Offline</h1>
+        <p class="text-navy-500 mt-1 text-sm">Input ID tiket fisik yang dijual. Tersedia {{ available_total }} ID.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div class="lg:col-span-2 panel-card rounded-2xl p-6">
             <form method="post" class="space-y-5" id="offline-form">
                 {% csrf_token %}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pembeli</label>
-                        <input type="text" name="buyer_name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 outline-none">
+                        <label class="block text-sm font-medium text-navy-700 mb-1">Nama Pembeli</label>
+                        <input type="text" name="buyer_name" required class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 outline-none text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
-                        <input type="text" name="buyer_phone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 outline-none">
+                        <label class="block text-sm font-medium text-navy-700 mb-1">WhatsApp</label>
+                        <input type="text" name="buyer_phone" required class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 outline-none text-sm">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" name="buyer_email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 outline-none">
+                    <label class="block text-sm font-medium text-navy-700 mb-1">Email <span class="text-navy-400 font-normal">(opsional)</span></label>
+                    <input type="email" name="buyer_email" class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 outline-none text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Season</label>
-                    <select name="ticket_type" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 outline-none">
+                    <label class="block text-sm font-medium text-navy-700 mb-1">Season</label>
+                    <select name="ticket_type" required class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 outline-none text-sm">
                         {% for ticket_type in ticket_types %}
                         <option value="{{ ticket_type.pk }}" data-price="{{ ticket_type.price }}" data-bundle="{{ ticket_type.bundle_price }}">
                             {{ ticket_type.name }} · 1: Rp {{ ticket_type.price|floatformat:0 }} · 2: Rp {{ ticket_type.bundle_price|floatformat:0 }}
@@ -40,24 +40,24 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">ID Tiket</label>
-                    <textarea name="ticket_numbers" rows="4" required placeholder="Contoh: 0045, 0120, 0088" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 outline-none font-mono text-sm"></textarea>
-                    <p class="text-xs text-gray-400 mt-1">Pisahkan dengan koma atau baris baru. Jumlah ID = jumlah tiket.</p>
+                    <label class="block text-sm font-medium text-navy-700 mb-1">ID Tiket</label>
+                    <textarea name="ticket_numbers" rows="4" required placeholder="Contoh: 0045, 0120, 0088" class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 outline-none font-mono text-sm"></textarea>
+                    <p class="text-xs text-navy-400 mt-1">Pisahkan dengan koma atau baris baru. Klik ID di panel kanan untuk menambah.</p>
                 </div>
-                <div class="rounded-xl bg-primary-50 border border-primary-100 p-4 flex items-center justify-between">
+                <div class="rounded-xl bg-gold-50 border border-gold-200/60 p-4 flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-primary-700">Total Tiket</p>
-                        <p class="text-2xl font-bold text-primary-900" id="ticket-count">0</p>
+                        <p class="text-sm text-navy-600">Total Tiket</p>
+                        <p class="text-2xl font-bold text-navy-900" id="ticket-count">0</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm text-primary-700">Estimasi Total</p>
-                        <p class="text-2xl font-bold text-primary-900" id="ticket-total">Rp 0</p>
+                        <p class="text-sm text-navy-600">Estimasi Total</p>
+                        <p class="text-2xl font-bold text-navy-900" id="ticket-total">Rp 0</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
-                        <select name="payment_method" required class="w-full px-4 py-3 rounded-xl border border-gray-200">
+                        <label class="block text-sm font-medium text-navy-700 mb-1">Metode Pembayaran</label>
+                        <select name="payment_method" required class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 text-sm">
                             <option value="">Pilih metode</option>
                             {% for method in payment_methods %}
                             <option value="{{ method.pk }}">{{ method.name }} ({{ method.get_type_display }})</option>
@@ -67,42 +67,27 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Status Pembayaran</label>
-                        <select name="payment_status" class="w-full px-4 py-3 rounded-xl border border-gray-200">
+                        <label class="block text-sm font-medium text-navy-700 mb-1">Status Pembayaran</label>
+                        <select name="payment_status" class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 text-sm">
                             <option value="PENDING">Belum Lunas</option>
                             <option value="PAID" selected>Lunas</option>
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Serahkan Tiket Fisik</label>
-                    <select name="collect_now" class="w-full px-4 py-3 rounded-xl border border-gray-200">
+                    <label class="block text-sm font-medium text-navy-700 mb-1">Serahkan Tiket Fisik</label>
+                    <select name="collect_now" class="input-elegant w-full px-4 py-3 rounded-xl border border-navy-100 text-sm">
                         <option value="YES" selected>Sudah diserahkan</option>
                         <option value="NO">Belum diserahkan</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors">
+                <button type="submit" class="w-full py-4 btn-gradient-primary rounded-xl text-sm btn-touch">
                     Simpan Penjualan
                 </button>
             </form>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm h-fit">
-            <h2 class="font-semibold text-gray-900 mb-3">ID Tersedia</h2>
-            <p class="text-xs text-gray-500 mb-3">Klik untuk menambah ke form.</p>
-            <div class="flex flex-wrap gap-2 max-h-[420px] overflow-y-auto" id="available-list">
-                {% for num in available_preview %}
-                <button type="button" data-ticket="{{ num }}" class="available-chip px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-primary-100 text-xs font-mono text-gray-700">
-                    {{ num }}
-                </button>
-                {% empty %}
-                <p class="text-sm text-gray-400">Tidak ada ID tersedia.</p>
-                {% endfor %}
-            </div>
-            {% if available_more %}
-            <p class="text-xs text-gray-400 mt-3">+{{ available_more }} ID lainnya</p>
-            {% endif %}
-        </div>
+        {% include 'components/ticket_id_picker.html' %}
     </div>
 </div>
 
@@ -130,24 +115,11 @@
         const opt = seasonSelect.options[seasonSelect.selectedIndex];
         const single = parseInt(opt.dataset.price || '0', 10);
         const bundle = parseInt(opt.dataset.bundle || '0', 10);
-        const total = calcBundleTotal(ids.length, single, bundle);
-        totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+        totalEl.textContent = 'Rp ' + calcBundleTotal(ids.length, single, bundle).toLocaleString('id-ID');
     }
 
     textarea.addEventListener('input', refreshSummary);
     seasonSelect.addEventListener('change', refreshSummary);
-
-    document.querySelectorAll('.available-chip').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const current = parseIds(textarea.value);
-            const value = btn.dataset.ticket;
-            if (current.includes(value)) return;
-            current.push(value);
-            textarea.value = current.join(', ');
-            refreshSummary();
-        });
-    });
-
     refreshSummary();
 })();
 </script>

@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full antialiased selection:bg-purple-600 selection:text-white">
+<html lang="id" class="h-full antialiased selection:bg-amber-300 selection:text-navy-950">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#701a75">
+    <meta name="theme-color" content="#1a2744">
     <title>{% block title %}{{ event_name }}{% endblock %}</title>
-    
-    <!-- Google Fonts: Montserrat & Plus Jakarta Sans -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script>
@@ -18,115 +17,199 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Montserrat"', '"Plus Jakarta Sans"', 'sans-serif'],
-                        cinema: ['"Montserrat"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
                     },
                     colors: {
-                        primary: { 
-                            50: '#fdf4ff', 100: '#fae8ff', 200: '#f5d0fe', 300: '#f0abfc', 
-                            400: '#e879f9', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf', 
-                            800: '#86198f', 900: '#701a75', 950: '#4a044e' 
+                        navy: {
+                            50: '#f0f4fa', 100: '#dce6f2', 200: '#b8c9de', 300: '#8aa3c4',
+                            400: '#5c7aa8', 500: '#3d5f8f', 600: '#2d4a73', 700: '#1e3a5f',
+                            800: '#1a2744', 900: '#121c33', 950: '#0a1020'
                         },
-                        amber: { 
-                            50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 
-                            400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309', 
-                            800: '#92400e', 900: '#78350f' 
+                        gold: {
+                            50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d',
+                            400: '#f5c518', 500: '#e8a820', 600: '#ca8a04', 700: '#a16207',
+                            800: '#854d0e', 900: '#713f12'
+                        },
+                        primary: {
+                            50: '#f0f4fa', 100: '#dce6f2', 200: '#b8c9de', 300: '#8aa3c4',
+                            400: '#5c7aa8', 500: '#3d5f8f', 600: '#2d4a73', 700: '#1e3a5f',
+                            800: '#1a2744', 900: '#121c33', 950: '#0a1020'
+                        },
+                        amber: {
+                            50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d',
+                            400: '#f5c518', 500: '#e8a820', 600: '#ca8a04', 700: '#a16207',
+                            800: '#854d0e', 900: '#713f12'
                         },
                     },
                     boxShadow: {
-                        'glow-purple': '0 0 25px -3px rgba(192, 38, 211, 0.35)',
-                        'glow-amber': '0 0 25px -3px rgba(245, 158, 11, 0.35)',
-                        'card-colored': '0 10px 30px -5px rgba(192, 38, 211, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
-                    }
+                        'glow-gold': '0 0 40px -8px rgba(245, 197, 24, 0.35)',
+                        'glow-soft': '0 20px 50px -15px rgba(26, 39, 68, 0.15)',
+                        'card': '0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -6px rgba(26, 39, 68, 0.08)',
+                        'card-hover': '0 4px 8px rgba(15, 23, 42, 0.04), 0 20px 40px -10px rgba(26, 39, 68, 0.12)',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-up-delay': 'fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards',
+                        'fade-up-delay-2': 'fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards',
+                        'fade-up-delay-3': 'fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'shimmer': 'shimmer 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(16px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        },
+                        shimmer: {
+                            '0%, 100%': { opacity: '0.45' },
+                            '50%': { opacity: '0.75' },
+                        },
+                    },
                 }
             }
         }
     </script>
     <style>
         [x-cloak] { display: none !important; }
-        
+
         body {
-            font-family: 'Montserrat', 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            background-color: #faf5ff;
-            color: #0f172a;
+            background-color: #f8f6f1;
+            color: #121c33;
         }
 
-        /* Elegant light ambient glow */
         .ambient-canvas {
-            background-color: #faf5ff;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(250, 232, 255, 0.7) 0%, transparent 45%),
-                radial-gradient(circle at 90% 20%, rgba(254, 243, 199, 0.6) 0%, transparent 45%),
-                radial-gradient(circle at 50% 90%, rgba(245, 208, 254, 0.4) 0%, transparent 60%);
+            background-color: #f8f6f1;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245, 197, 24, 0.12) 0%, transparent 55%),
+                radial-gradient(circle at 0% 50%, rgba(30, 58, 95, 0.06) 0%, transparent 42%),
+                radial-gradient(circle at 100% 70%, rgba(245, 197, 24, 0.08) 0%, transparent 40%);
         }
 
-        /* Smooth scroll & Custom Scrollbar */
+        .ambient-orb {
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(60px);
+            pointer-events: none;
+            animation: shimmer 8s ease-in-out infinite;
+        }
+
         html { scroll-behavior: smooth; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #fdf4ff; }
-        ::-webkit-scrollbar-thumb { background: #f0abfc; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #c026d3; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(30, 58, 95, 0.2); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(30, 58, 95, 0.35); }
 
-        /* Colored Liz (border) cards */
-        .card-liz-purple {
-            background: #ffffff;
-            border: 1.5px solid rgba(192, 38, 211, 0.18);
-            box-shadow: 0 10px 30px -8px rgba(112, 26, 117, 0.06);
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .card-liz-purple:hover {
-            border-color: rgba(192, 38, 211, 0.45);
-            transform: translateY(-2px);
-            box-shadow: 0 18px 36px -10px rgba(192, 38, 211, 0.15);
-        }
+        .animate-on-load { opacity: 0; }
 
-        .card-liz-amber {
-            background: #ffffff;
-            border: 1.5px solid rgba(245, 158, 11, 0.25);
-            box-shadow: 0 10px 30px -8px rgba(217, 119, 6, 0.06);
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        .surface-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(26, 39, 68, 0.08);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03), 0 8px 24px -8px rgba(26, 39, 68, 0.07);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .card-liz-amber:hover {
-            border-color: rgba(245, 158, 11, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 18px 36px -10px rgba(245, 158, 11, 0.15);
+        .surface-card:hover {
+            border-color: rgba(245, 197, 24, 0.35);
+            box-shadow: 0 4px 8px rgba(15, 23, 42, 0.03), 0 20px 40px -12px rgba(26, 39, 68, 0.1);
         }
+        .surface-card-interactive:hover { transform: translateY(-2px); }
 
-        /* Gradient Button Styles (NO BLACK BUTTONS) */
         .btn-gradient-primary {
-            background: linear-gradient(135deg, #c026d3 0%, #a21caf 50%, #701a75 100%);
-            color: #ffffff;
-            box-shadow: 0 8px 20px -4px rgba(192, 38, 211, 0.35);
-            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #f5c518 0%, #e8a820 50%, #ca8a04 100%);
+            color: #121c33;
+            box-shadow: 0 4px 14px -3px rgba(245, 197, 24, 0.45);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+        }
+        .btn-gradient-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
         .btn-gradient-primary:hover {
-            background: linear-gradient(135deg, #d946ef 0%, #c026d3 50%, #a21caf 100%);
-            box-shadow: 0 12px 25px -4px rgba(192, 38, 211, 0.5);
+            box-shadow: 0 8px 24px -4px rgba(245, 197, 24, 0.55);
+            transform: translateY(-1px);
+        }
+        .btn-gradient-primary:hover::before { opacity: 1; }
+        .btn-gradient-primary:active { transform: translateY(0) scale(0.98); }
+
+        .btn-gradient-navy {
+            background: linear-gradient(135deg, #2d4a73 0%, #1a2744 100%);
+            color: #fef3c7;
+            box-shadow: 0 4px 14px -3px rgba(26, 39, 68, 0.35);
+            transition: all 0.25s ease;
+        }
+        .btn-gradient-navy:hover {
+            box-shadow: 0 8px 24px -4px rgba(26, 39, 68, 0.45);
+            transform: translateY(-1px);
         }
 
-        .btn-gradient-amber {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: #ffffff;
-            box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.35);
-            transition: all 0.2s ease;
-        }
-        .btn-gradient-amber:hover {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            box-shadow: 0 12px 25px -4px rgba(245, 158, 11, 0.5);
+        .btn-touch { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .btn-touch:active { transform: scale(0.97); }
+
+        .input-elegant { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .input-elegant:focus {
+            border-color: rgba(30, 58, 95, 0.45);
+            box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.15);
         }
 
-        /* Touch scale effect */
-        .btn-touch {
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        .nav-link { position: relative; transition: color 0.2s ease; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: linear-gradient(90deg, #f5c518, #e8a820);
+            transition: width 0.25s ease;
         }
-        .btn-touch:active {
-            transform: scale(0.97);
+        .nav-link:hover::after { width: 100%; }
+
+        .section-label {
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: rgba(30, 58, 95, 0.55);
+        }
+
+        .page-header-title {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: #1a2744;
+        }
+
+        .logo-ring {
+            box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.35), 0 8px 32px -8px rgba(26, 39, 68, 0.2);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .animate-on-load { opacity: 1; }
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="h-full bg-purple-50/40 text-slate-900 antialiased selection:bg-purple-600 selection:text-white">
+<body class="h-full bg-[#f8f6f1] text-navy-900 antialiased selection:bg-amber-300 selection:text-navy-950">
     {% block body %}{% endblock %}
     {% block extra_js %}{% endblock %}
 </body>

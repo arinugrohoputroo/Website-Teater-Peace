@@ -5,11 +5,11 @@
 {% block content %}
 <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Panitia</h1>
-        <p class="text-slate-500 text-xs sm:text-sm mt-1">Ringkasan performa penjualan tiket dan operasional event.</p>
+        <h1 class="page-header-title text-2xl sm:text-3xl">Dashboard Panitia</h1>
+        <p class="text-navy-500 text-xs sm:text-sm mt-1">Ringkasan performa penjualan tiket dan operasional event.</p>
     </div>
     <div class="flex items-center gap-2">
-        <a href="{% url 'ticketing:offline_sale' %}" class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-primary-500/20 active:scale-95 transition-all btn-touch flex items-center gap-2">
+        <a href="{% url 'ticketing:offline_sale' %}" class="px-4 py-2.5 btn-gradient-primary rounded-xl text-xs sm:text-sm active:scale-95 transition-all btn-touch flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Kasir Offline</span>
         </a>
@@ -18,7 +18,7 @@
 
 <!-- Metrics Grid -->
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Total Kuota</span>
             <span class="w-8 h-8 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-bold">🎫</span>
@@ -27,7 +27,7 @@
         <p class="text-[11px] font-semibold text-slate-400 mt-1">Gabungan semua season</p>
     </div>
 
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Terjual Online</span>
             <span class="w-8 h-8 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-xs font-bold">🌐</span>
@@ -36,7 +36,7 @@
         <p class="text-[11px] font-semibold text-sky-600/80 mt-1">Tiket Web Pembeli</p>
     </div>
 
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Terjual Offline</span>
             <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">🏪</span>
@@ -45,7 +45,7 @@
         <p class="text-[11px] font-semibold text-indigo-600/80 mt-1">Penjualan Langsung</p>
     </div>
 
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Sisa Kuota</span>
             <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">✨</span>
@@ -54,7 +54,7 @@
         <p class="text-[11px] font-semibold text-emerald-600/80 mt-1">Tersedia untuk dijual</p>
     </div>
 
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Pool ID Tiket</span>
             <span class="w-8 h-8 rounded-2xl bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">🔢</span>
@@ -63,7 +63,7 @@
         <p class="text-[11px] font-bold text-primary-600 mt-1">Sisa ID: {{ id_pool_remaining }}</p>
     </div>
 
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Online Belum Diambil</span>
             <span class="w-8 h-8 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs font-bold">⏳</span>
@@ -72,7 +72,7 @@
         <p class="text-[11px] font-semibold text-amber-600/80 mt-1">Perlu collection</p>
     </div>
 
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Offline Belum Diambil</span>
             <span class="w-8 h-8 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xs font-bold">📦</span>
@@ -81,7 +81,7 @@
         <p class="text-[11px] font-semibold text-orange-600/80 mt-1">Perlu cetak fisik</p>
     </div>
 
-    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-md transition-all">
+    <div class="panel-card rounded-3xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-all">
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-500">Sudah Diambil</span>
             <span class="w-8 h-8 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xs font-bold">✅</span>
