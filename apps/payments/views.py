@@ -79,13 +79,14 @@ def send_ga4_purchase_event(order):
             items.append({
                 'item_id': f"ticket_{item.ticket_type.id}",
                 'item_name': str(item.ticket_type.name),
-                'quantity': qty,
                 'price': price,
+                'quantity': qty,
             })
             items_summary.append(f"{item.ticket_type.name} x{qty} (@ Rp {price:,.0f})")
 
         summary_str = ", ".join(items_summary) or "Tanpa Item"
         _log_ga4(f"[GA4 MP] Memulai pengiriman event purchase untuk order: {order_num} | Total: Rp {float(order.total_amount):,.0f} | Items: [{summary_str}]")
+        _log_ga4(f"[GA4 MP] Items Payload JSON untuk order {order_num}: {json.dumps(items)}")
 
         payload = {
             'client_id': f"order_{order.order_number}",
