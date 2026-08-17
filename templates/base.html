@@ -1,6 +1,38 @@
 <!DOCTYPE html>
 <html lang="id" class="h-full antialiased selection:bg-amber-300 selection:text-navy-950">
 <head>
+    <!-- Google tag (gtag.js) GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6C0YVKH9B5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-6C0YVKH9B5');
+
+      // Helper tracking structure foundation for GA4 measurement
+      window.tpTrack = {
+        viewTicket: function(ticketName, price) {
+          gtag('event', 'view_item', {
+            items: [{ item_name: ticketName, price: price }]
+          });
+        },
+        viewOrder: function(orderNumber, status, amount) {
+          gtag('event', 'view_order_status', {
+            order_number: orderNumber,
+            order_status: status,
+            value: amount
+          });
+        },
+        orderVerifiedPaid: function(orderNumber, amount) {
+          gtag('event', 'admin_verified_paid', {
+            transaction_id: orderNumber,
+            value: amount,
+            currency: 'IDR'
+          });
+        }
+      };
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1a2744">
