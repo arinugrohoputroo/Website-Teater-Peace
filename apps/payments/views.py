@@ -1,3 +1,8 @@
+import json
+import logging
+import os
+import urllib.request
+
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -13,6 +18,59 @@ from apps.ticketing.services import (
 )
 
 from .models import Payment, PaymentMethod
+
+logger = logging.getLogger(__name__)
+
+
+def send_ga4_purchase_event(order):
+    """
+    Kirim event purchase ke GA4 Measurement Protocol secara server-side
+    ketika status order berhasil menjadi PAID / VERIFIED.
+    Kegagalan pengiriman tidak akan menggagalkan/membatalkan verifikasi pembayaran.
+    """
+    try:
+        measurement_id = os.environ.get('GA4_MEASUREMENT_ID', 'G-6C0YVKH9B5').strip()
+        api_secret = os.environ.get('GA4_API_SECRET', '').strip()
+
+        if not api_secret or not measurement_id:
+            logger.debug("GA4_API_SECRET or GA4_MEASUREMENT_ID not set. Skipping GA4 Measurement Protocol purchase.")
+            return
+
+        items = []
+        for item in order.order_items.select_related('ticket_type').all():
+            items.append({
+                'item_id': str(item.ticket_type.id),
+                'item_name': str(item.ticket_type.name),
+                'quantity': int(item.quantity),
+                'price': float(item.price),
+            })
+
+        payload = {
+            'client_id': f"order_{order.order_number}",
+            'events': [{
+                'name': 'purchase',
+                'params': {
+                    'transaction_id': str(order.order_number),
+                    'value': float(order.total_amount),
+                    'currency': 'IDR',
+                    'items': items,
+                }
+            }]
+        }
+
+        endpoint = f"https://www.google-analytics.com/mp/collect?measurement_id={measurement_id}&api_secret={api_secret}"
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            endpoint,
+            data=data,
+            headers={'Content-Type': 'application/json'},
+            method='POST'
+        )
+        with urllib.request.urlopen(req, timeout=3.0) as response:
+            logger.info("GA4 purchase event sent for order %s. Response status: %s", order.order_number, response.status)
+    except Exception as exc:
+        logger.warning("Failed to send GA4 purchase event for order %s: %s", getattr(order, 'order_number', 'unknown'), exc)
+
 
 
 @module_required('payment')
@@ -192,6 +250,7 @@ def payment_approve(request, pk):
             request=request,
             ticket_numbers=ticket_numbers,
         )
+        send_ga4_purchase_event(payment.order)
     except ValueError as exc:
         transaction.set_rollback(True)
         messages.error(request, str(exc))
