@@ -78,6 +78,6 @@ python manage.py runserver
 Open http://127.0.0.1:8000
 
 ## Test Login
-- **Admin**: Login Google dengan `putro.arinugroho@gmail.com` → redirect ke Dashboard
+- **Admin**: Login Google dengan `*********` → redirect ke Dashboard
 - **Staff**: Login Google dengan email yang sudah didaftarkan Admin → redirect ke Dashboard
 - **Customer**: Login Google dengan email apapun → redirect ke Home, akun CUSTOMER otomatis dibuat
