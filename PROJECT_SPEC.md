@@ -57,8 +57,8 @@
 ---
 
 ## Admin Account
-- Email: putro.arinugroho@gmail.com
-- Dev password: admin123
+- Email: *******
+- Dev password: ******
 
 ## Setup Google OAuth
 1. Buka https://console.cloud.google.com/apis/credentials
