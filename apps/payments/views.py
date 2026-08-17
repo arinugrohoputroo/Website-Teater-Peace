@@ -88,16 +88,21 @@ def send_ga4_purchase_event(order):
         _log_ga4(f"[GA4 MP] Memulai pengiriman event purchase untuk order: {order_num} | Total: Rp {float(order.total_amount):,.0f} | Items: [{summary_str}]")
         _log_ga4(f"[GA4 MP] Items Payload JSON untuk order {order_num}: {json.dumps(items)}")
 
+        debug_mode = getattr(settings, 'GA4_DEBUG_MODE', True)
+        event_params = {
+            'transaction_id': str(order.order_number),
+            'value': float(order.total_amount),
+            'currency': 'IDR',
+            'items': items,
+        }
+        if debug_mode:
+            event_params['debug_mode'] = 1
+
         payload = {
             'client_id': f"order_{order.order_number}",
             'events': [{
                 'name': 'purchase',
-                'params': {
-                    'transaction_id': str(order.order_number),
-                    'value': float(order.total_amount),
-                    'currency': 'IDR',
-                    'items': items,
-                }
+                'params': event_params,
             }]
         }
 

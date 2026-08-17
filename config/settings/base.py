@@ -10,6 +10,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
 GA4_MEASUREMENT_ID = config('GA4_MEASUREMENT_ID', default='G-6C0YVKH9B5')
 GA4_API_SECRET = config('GA4_API_SECRET', default='')
+GA4_DEBUG_MODE = config('GA4_DEBUG_MODE', default=True, cast=bool)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
