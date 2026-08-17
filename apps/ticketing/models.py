@@ -88,6 +88,7 @@ class Order(models.Model):
         choices=Status.choices,
         default=Status.PENDING,
     )
+    ga_purchase_sent = models.BooleanField(default=False, verbose_name='GA4 Purchase Sent')
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

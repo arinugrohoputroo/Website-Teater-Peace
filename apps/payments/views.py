@@ -42,9 +42,17 @@ def send_ga4_purchase_event(order):
     """
     Kirim event purchase ke GA4 Measurement Protocol secara server-side
     ketika status order berhasil menjadi PAID / VERIFIED.
-    Kegagalan pengiriman tidak akan menggagalkan/membatalkan verifikasi pembayaran.
+    Menggunakan database-level atomic check (ga_purchase_sent) untuk menjamin 100% idempotency.
     """
+    from apps.ticketing.models import Order
     order_num = getattr(order, 'order_number', 'N/A')
+
+    # Atomic DB idempotency check: set ga_purchase_sent = True if currently False
+    updated_count = Order.objects.filter(pk=order.pk, ga_purchase_sent=False).update(ga_purchase_sent=True)
+    if updated_count == 0:
+        _log_ga4(f"[GA4 MP] Order {order_num} sudah pernah mengirim event purchase. Dibatalkan (Idempotent).")
+        return
+
     _log_ga4(f"[GA4 MP] Memulai pengiriman event purchase untuk order: {order_num}")
     try:
         measurement_id = (
