@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 import urllib.error
 import urllib.request
 
@@ -24,13 +25,27 @@ from .models import Payment, PaymentMethod
 logger = logging.getLogger(__name__)
 
 
+def _log_ga4(message, level='info'):
+    """Tulis pesan log ke logger Django dan langsung ke sys.stderr (WSGI Error Log PythonAnywhere)."""
+    if level == 'warning':
+        logger.warning(message)
+    else:
+        logger.info(message)
+    try:
+        sys.stderr.write(f"{message}\n")
+        sys.stderr.flush()
+    except Exception:
+        pass
+
+
 def send_ga4_purchase_event(order):
     """
     Kirim event purchase ke GA4 Measurement Protocol secara server-side
     ketika status order berhasil menjadi PAID / VERIFIED.
     Kegagalan pengiriman tidak akan menggagalkan/membatalkan verifikasi pembayaran.
     """
-    logger.info("[GA4 MP] Memulai pengiriman event purchase untuk order: %s", getattr(order, 'order_number', 'N/A'))
+    order_num = getattr(order, 'order_number', 'N/A')
+    _log_ga4(f"[GA4 MP] Memulai pengiriman event purchase untuk order: {order_num}")
     try:
         measurement_id = (
             getattr(settings, 'GA4_MEASUREMENT_ID', None)
@@ -45,7 +60,7 @@ def send_ga4_purchase_event(order):
         ).strip()
 
         if not api_secret:
-            logger.warning("[GA4 MP] GA4_API_SECRET TIDAK DITEMUKAN di settings / environment! Event purchase dibatalkan.")
+            _log_ga4(f"[GA4 MP] GA4_API_SECRET TIDAK DITEMUKAN di settings/environment untuk order {order_num}! Event purchase dibatalkan.", level='warning')
             return
 
         items = []
@@ -80,15 +95,16 @@ def send_ga4_purchase_event(order):
         )
         with urllib.request.urlopen(req, timeout=5.0) as response:
             resp_body = response.read().decode('utf-8')
-            logger.info("[GA4 MP] BERHASIL dikirim untuk order %s. Status HTTP: %s. Response: %s", order.order_number, response.status, resp_body or '(empty/204 OK)')
+            _log_ga4(f"[GA4 MP] BERHASIL dikirim untuk order {order.order_number}. Status HTTP: {response.status}. Response: {resp_body or '(204 No Content / OK)'}")
     except urllib.error.HTTPError as http_err:
         try:
             err_body = http_err.read().decode('utf-8')
         except Exception:
             err_body = ''
-        logger.warning("[GA4 MP] HTTP Error %s untuk order %s: %s", http_err.code, getattr(order, 'order_number', 'N/A'), err_body)
+        _log_ga4(f"[GA4 MP] HTTP Error {http_err.code} untuk order {order_num}: {err_body}", level='warning')
     except Exception as exc:
-        logger.warning("[GA4 MP] Gagal mengirim event purchase untuk order %s: %s", getattr(order, 'order_number', 'N/A'), exc)
+        _log_ga4(f"[GA4 MP] Gagal mengirim event purchase untuk order {order_num}: {exc}", level='warning')
+
 
 
 
