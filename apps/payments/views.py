@@ -72,13 +72,20 @@ def send_ga4_purchase_event(order):
             return
 
         items = []
+        items_summary = []
         for item in order.order_items.select_related('ticket_type').all():
+            qty = int(item.quantity)
+            price = float(item.price)
             items.append({
-                'item_id': str(item.ticket_type.id),
+                'item_id': f"ticket_{item.ticket_type.id}",
                 'item_name': str(item.ticket_type.name),
-                'quantity': int(item.quantity),
-                'price': float(item.price),
+                'quantity': qty,
+                'price': price,
             })
+            items_summary.append(f"{item.ticket_type.name} x{qty} (@ Rp {price:,.0f})")
+
+        summary_str = ", ".join(items_summary) or "Tanpa Item"
+        _log_ga4(f"[GA4 MP] Memulai pengiriman event purchase untuk order: {order_num} | Total: Rp {float(order.total_amount):,.0f} | Items: [{summary_str}]")
 
         payload = {
             'client_id': f"order_{order.order_number}",
