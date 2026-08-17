@@ -1,8 +1,10 @@
 import json
 import logging
 import os
+import urllib.error
 import urllib.request
 
+from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -28,12 +30,22 @@ def send_ga4_purchase_event(order):
     ketika status order berhasil menjadi PAID / VERIFIED.
     Kegagalan pengiriman tidak akan menggagalkan/membatalkan verifikasi pembayaran.
     """
+    logger.info("[GA4 MP] Memulai pengiriman event purchase untuk order: %s", getattr(order, 'order_number', 'N/A'))
     try:
-        measurement_id = os.environ.get('GA4_MEASUREMENT_ID', 'G-6C0YVKH9B5').strip()
-        api_secret = os.environ.get('GA4_API_SECRET', '').strip()
+        measurement_id = (
+            getattr(settings, 'GA4_MEASUREMENT_ID', None)
+            or os.environ.get('GA4_MEASUREMENT_ID')
+            or 'G-6C0YVKH9B5'
+        ).strip()
 
-        if not api_secret or not measurement_id:
-            logger.debug("GA4_API_SECRET or GA4_MEASUREMENT_ID not set. Skipping GA4 Measurement Protocol purchase.")
+        api_secret = (
+            getattr(settings, 'GA4_API_SECRET', None)
+            or os.environ.get('GA4_API_SECRET')
+            or ''
+        ).strip()
+
+        if not api_secret:
+            logger.warning("[GA4 MP] GA4_API_SECRET TIDAK DITEMUKAN di settings / environment! Event purchase dibatalkan.")
             return
 
         items = []
@@ -66,10 +78,18 @@ def send_ga4_purchase_event(order):
             headers={'Content-Type': 'application/json'},
             method='POST'
         )
-        with urllib.request.urlopen(req, timeout=3.0) as response:
-            logger.info("GA4 purchase event sent for order %s. Response status: %s", order.order_number, response.status)
+        with urllib.request.urlopen(req, timeout=5.0) as response:
+            resp_body = response.read().decode('utf-8')
+            logger.info("[GA4 MP] BERHASIL dikirim untuk order %s. Status HTTP: %s. Response: %s", order.order_number, response.status, resp_body or '(empty/204 OK)')
+    except urllib.error.HTTPError as http_err:
+        try:
+            err_body = http_err.read().decode('utf-8')
+        except Exception:
+            err_body = ''
+        logger.warning("[GA4 MP] HTTP Error %s untuk order %s: %s", http_err.code, getattr(order, 'order_number', 'N/A'), err_body)
     except Exception as exc:
-        logger.warning("Failed to send GA4 purchase event for order %s: %s", getattr(order, 'order_number', 'unknown'), exc)
+        logger.warning("[GA4 MP] Gagal mengirim event purchase untuk order %s: %s", getattr(order, 'order_number', 'N/A'), exc)
+
 
 
 
