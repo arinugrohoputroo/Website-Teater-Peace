@@ -1,9 +1,26 @@
+import os
+import shutil
+from django.conf import settings
 from django.db import migrations
 
 
 def seed_naskah_and_seasons(apps, schema_editor):
     ShowScript = apps.get_model('ticketing', 'ShowScript')
     TicketType = apps.get_model('ticketing', 'TicketType')
+
+    # Copy poster images from repo's 'Poster Naskah' directory to MEDIA_ROOT/posters
+    poster_src_dir = os.path.join(settings.BASE_DIR, 'Poster Naskah')
+    poster_dst_dir = os.path.join(settings.MEDIA_ROOT, 'posters')
+    os.makedirs(poster_dst_dir, exist_ok=True)
+
+    if os.path.exists(poster_src_dir):
+        for f in os.listdir(poster_src_dir):
+            src_file = os.path.join(poster_src_dir, f)
+            if os.path.isfile(src_file):
+                try:
+                    shutil.copy2(src_file, os.path.join(poster_dst_dir, f))
+                except Exception:
+                    pass
 
     naskah_data = [
         {
