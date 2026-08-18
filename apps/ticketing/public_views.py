@@ -142,11 +142,14 @@ def _render_checkout(request, items=None, total=None, form_data=None):
 
 
 def ticket_select(request):
-
-    types = ticket_types_with_stats(active_only=True)
-
-    ticket_types = [tt for tt in types if tt.remaining > 0]
-
+    types = TicketType.objects.filter(active=True).prefetch_related('naskah_list')
+    stats_map = {tt.id: tt for tt in ticket_types_with_stats(active_only=True)}
+    ticket_types = []
+    for tt in types:
+        stat = stats_map.get(tt.id)
+        tt.remaining_qty = stat.remaining if stat else tt.remaining
+        if tt.remaining_qty > 0:
+            ticket_types.append(tt)
     return render(request, 'public/ticket_select.html', {'ticket_types': ticket_types})
 
 

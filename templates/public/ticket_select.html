@@ -1,22 +1,31 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Pilih Tiket — {{ event_name }}{% endblock %}
+{% block title %}Pilih Tiket & Jam Tayang — {{ event_name }}{% endblock %}
 
 {% block body %}
-<div class="min-h-screen flex flex-col ambient-canvas text-slate-900 pb-28 sm:pb-16">
+<div class="min-h-screen flex flex-col ambient-canvas text-slate-900 pb-36 sm:pb-24">
     {% include 'public/_nav.html' %}
 
-    <main class="flex-1 max-w-xl mx-auto w-full px-4 py-8 sm:py-10">
-        <div class="mb-8 animate-on-load animate-fade-up">
-            <p class="section-label mb-1.5">Langkah 1</p>
-            <h1 class="page-header-title text-2xl sm:text-3xl text-slate-900">Pilih Tiket</h1>
+    <main class="flex-1 max-w-4xl mx-auto w-full px-4 py-6 sm:py-10">
+        <!-- Page Title & Header -->
+        <div class="mb-8 text-center sm:text-left animate-on-load animate-fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200/80 text-xs font-semibold mb-3">
+                <svg class="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/></svg>
+                <span>Gelar Karya Ke-28 Teater Peace</span>
+            </div>
+            <h1 class="page-header-title text-3xl sm:text-4xl text-slate-900 font-extrabold tracking-tight">Pilih Tiket &amp; Jam Tayang</h1>
+            <p class="text-slate-500 text-sm mt-1.5 leading-relaxed max-w-2xl">
+                Pilih season pertunjukan teater yang ingin Anda saksikan. Setiap season menyajikan deretan naskah spesial dari Teater Peace.
+            </p>
         </div>
 
         {% if messages %}
         <div class="mb-6 space-y-2 animate-on-load animate-fade-up">
             {% for message in messages %}
-            <div class="p-3.5 rounded-xl text-xs font-medium bg-red-50/80 text-red-700 border border-red-200/60 backdrop-blur-sm">
-                {{ message }}
+            <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold bg-red-50 text-red-700 border border-red-200/80 shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>{{ message }}</span>
             </div>
             {% endfor %}
         </div>
@@ -24,83 +33,198 @@
 
         <form method="post" action="{% url 'public_order:checkout' %}" id="ticket-form">
             {% csrf_token %}
-            <div class="space-y-4 mb-8">
+            <div class="space-y-8 mb-12">
                 {% for tt in ticket_types %}
-                <div class="surface-card rounded-2xl p-5 sm:p-6 animate-on-load animate-fade-up" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-slate-900 text-base mb-1">{{ tt.name }}</h3>
-                            {% if tt.description %}
-                            <p class="text-xs text-slate-500 mb-3 leading-relaxed">{{ tt.description }}</p>
-                            {% endif %}
+                <div class="surface-card rounded-3xl p-5 sm:p-7 shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-xl relative overflow-hidden animate-on-load animate-fade-up" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
 
-                            <div class="flex flex-wrap items-center gap-2 text-xs">
-                                <span class="font-semibold text-slate-700 bg-purple-50/80 px-2.5 py-1 rounded-lg border border-purple-100/60 tabular-nums">
-                                    1 Tiket: Rp {{ tt.price|floatformat:0 }}
+                    <!-- Decorative Background Accent -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-amber-100/40 via-purple-50/20 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+
+                    <!-- Season Header & Price Info -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                <h2 class="font-extrabold text-slate-900 text-xl sm:text-2xl tracking-tight">{{ tt.name }}</h2>
+                                {% if tt.show_time %}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-slate-950 shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Jam {{ tt.show_time }}
                                 </span>
-                                <span class="font-semibold text-amber-900 bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200/50 tabular-nums">
-                                    Bundel 2: Rp {{ tt.bundle_price|floatformat:0 }}
-                                </span>
+                                {% endif %}
                             </div>
+                            {% if tt.description %}
+                            <p class="text-xs text-slate-500 leading-relaxed">{{ tt.description }}</p>
+                            {% endif %}
                         </div>
 
-                        <div class="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-purple-100/50">
-                            <span class="text-xs font-medium text-slate-400 sm:hidden">Jumlah</span>
-                            <div class="inline-flex items-center rounded-xl bg-slate-50/80 p-1 border border-purple-100/50 shrink-0">
-                                <button type="button"
-                                    onclick="updateQty('{{ tt.id }}', -1, {{ tt.price }}, {{ tt.bundle_price }})"
-                                    class="w-10 h-10 rounded-lg bg-white text-slate-700 font-bold text-sm flex items-center justify-center shadow-sm active:scale-90 transition-all btn-touch hover:bg-purple-50 hover:text-purple-800">
-                                    –
-                                </button>
+                        <!-- Ticket Quantity Controls & Price Badges -->
+                        <div class="flex flex-col sm:items-end gap-2 shrink-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/80 text-xs tabular-nums">
+                                    1 Tiket: Rp {{ tt.price|floatformat:0 }}
+                                </span>
+                                <span class="font-bold text-amber-950 bg-gradient-to-r from-amber-100 to-amber-200/80 px-3 py-1.5 rounded-xl border border-amber-300/80 text-xs tabular-nums shadow-sm">
+                                    Bundel 2 Tiket: Rp {{ tt.bundle_price|floatformat:0 }}
+                                </span>
+                            </div>
 
-                                <input type="number"
-                                    id="qty_input_{{ tt.id }}"
-                                    name="qty_{{ tt.id }}"
-                                    value="0"
-                                    min="0"
-                                    max="20"
-                                    data-price="{{ tt.price }}"
-                                    data-bundle="{{ tt.bundle_price }}"
-                                    readonly
-                                    class="w-11 text-center bg-transparent font-bold text-base text-slate-900 outline-none tabular-nums">
+                            <div class="flex items-center justify-between sm:justify-end gap-3 pt-2">
+                                <span class="text-xs font-semibold text-slate-400 sm:hidden">Pilih Jumlah Tiket</span>
+                                <div class="inline-flex items-center rounded-2xl bg-slate-100/90 p-1.5 border border-slate-200 shrink-0 shadow-inner">
+                                    <button type="button"
+                                        onclick="updateQty('{{ tt.id }}', -1, {{ tt.price }}, {{ tt.bundle_price }})"
+                                        class="w-10 h-10 rounded-xl bg-white text-slate-800 font-extrabold text-base flex items-center justify-center shadow hover:bg-amber-50 hover:text-amber-900 active:scale-95 transition-all btn-touch">
+                                        –
+                                    </button>
 
-                                <button type="button"
-                                    onclick="updateQty('{{ tt.id }}', 1, {{ tt.price }}, {{ tt.bundle_price }})"
-                                    class="w-10 h-10 rounded-lg btn-gradient-primary font-bold text-sm flex items-center justify-center btn-touch">
-                                    +
-                                </button>
+                                    <input type="number"
+                                        id="qty_input_{{ tt.id }}"
+                                        name="qty_{{ tt.id }}"
+                                        value="0"
+                                        min="0"
+                                        max="20"
+                                        data-price="{{ tt.price }}"
+                                        data-bundle="{{ tt.bundle_price }}"
+                                        readonly
+                                        class="w-12 text-center bg-transparent font-extrabold text-lg text-slate-900 outline-none tabular-nums">
+
+                                    <button type="button"
+                                        onclick="updateQty('{{ tt.id }}', 1, {{ tt.price }}, {{ tt.bundle_price }})"
+                                        class="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 hover:bg-slate-800 font-extrabold text-base flex items-center justify-center shadow active:scale-95 transition-all btn-touch">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Naskah Pertunjukan Grid / Cards -->
+                    {% if tt.naskah_list.all %}
+                    <div class="mt-5">
+                        <div class="flex items-center justify-between mb-3.5">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
+                                Naskah yang Ditampilkan ({{ tt.naskah_list.all|length }} Judul)
+                            </h3>
+                            <span class="text-[11px] font-medium text-slate-400">Klik poster / judul untuk detail sinopsis &amp; pemain</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                            {% for naskah in tt.naskah_list.all %}
+                            <div onclick="openNaskahModal('{{ naskah.id }}')"
+                                class="group bg-slate-50 hover:bg-slate-100/80 rounded-2xl p-2.5 border border-slate-200/80 transition-all cursor-pointer flex flex-col justify-between hover:shadow-md hover:border-amber-300">
+                                <div>
+                                    <!-- Poster Image -->
+                                    <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-200 relative mb-2.5 shadow-sm group-hover:shadow transition-all">
+                                        {% if naskah.poster %}
+                                        <img src="{{ naskah.poster.url }}" alt="{{ naskah.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                        {% else %}
+                                        <div class="w-full h-full flex items-center justify-center text-xs font-medium text-slate-400">No Poster</div>
+                                        {% endif %}
+                                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                                            <span class="text-[10px] font-bold text-white bg-amber-500 px-2 py-0.5 rounded-full">Lihat Detail &rarr;</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Naskah Title & Director -->
+                                    <h4 class="font-bold text-slate-900 text-xs leading-snug line-clamp-1 group-hover:text-amber-900 transition-colors">{{ naskah.title }}</h4>
+                                    <p class="text-[10px] text-slate-500 line-clamp-1 mt-0.5">Sutradara: {{ naskah.director }}</p>
+                                </div>
+
+                                <button type="button" class="mt-2.5 w-full py-1 rounded-lg bg-white group-hover:bg-amber-500 group-hover:text-slate-950 border border-slate-200 group-hover:border-amber-500 text-[10px] font-bold text-slate-700 transition-colors text-center">
+                                    Detail Sinopsis
+                                </button>
+                            </div>
+
+                            <!-- Hidden Data Container for Modal JS -->
+                            <template id="naskah_data_{{ naskah.id }}">
+                                {
+                                    "title": "{{ naskah.title|escapejs }}",
+                                    "director": "{{ naskah.director|escapejs }}",
+                                    "production_by": "{{ naskah.production_by|escapejs }}",
+                                    "synopsis": "{{ naskah.synopsis|escapejs }}",
+                                    "cast": "{{ naskah.cast|escapejs }}",
+                                    "poster": "{% if naskah.poster %}{{ naskah.poster.url }}{% endif %}"
+                                }
+                            </template>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                 </div>
                 {% empty %}
-                <div class="surface-card rounded-2xl p-10 text-center text-slate-500 text-sm">
+                <div class="surface-card rounded-3xl p-12 text-center text-slate-500 text-sm">
                     Belum ada tiket tersedia saat ini.
                 </div>
                 {% endfor %}
             </div>
 
+            <!-- Sticky Bottom Checkout Bar -->
             {% if ticket_types %}
-            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-t border-purple-100/60 p-4 shadow-glow-soft">
-                <div class="max-w-xl mx-auto flex items-center justify-between gap-4">
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200/90 p-4 shadow-2xl">
+                <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Total</p>
-                        <p class="text-xl font-bold text-slate-900 tabular-nums" id="total-price-display">Rp 0</p>
-                        <p class="text-xs text-slate-500" id="total-qty-display">0 tiket dipilih</p>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total Pembelian Tiket</p>
+                        <p class="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums" id="total-price-display">Rp 0</p>
+                        <p class="text-xs font-semibold text-amber-700" id="total-qty-display">0 tiket dipilih</p>
                     </div>
 
                     <button type="submit"
                         id="submit-btn"
                         disabled
-                        class="px-7 py-3.5 bg-slate-200 text-slate-400 rounded-xl font-semibold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed">
-                        <span>Lanjutkan</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        class="px-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm transition-all btn-touch flex items-center gap-2 cursor-not-allowed">
+                        <span>Lanjutkan Checkout</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
             </div>
             {% endif %}
         </form>
     </main>
+</div>
+
+<!-- Naskah Detail Cinema Modal -->
+<div id="naskah-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 transition-all opacity-0">
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 relative p-6 sm:p-8 transform scale-95 transition-transform" id="naskah-modal-card">
+        <button type="button" onclick="closeNaskahModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center transition-colors">
+            ✕
+        </button>
+
+        <div class="flex flex-col sm:flex-row gap-6 items-start">
+            <div class="w-32 sm:w-40 shrink-0 aspect-[3/4] bg-slate-100 rounded-2xl overflow-hidden shadow-md border border-slate-200 mx-auto sm:mx-0">
+                <img id="modal-poster" src="" alt="" class="w-full h-full object-cover">
+            </div>
+
+            <div class="flex-1 min-w-0">
+                <div class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200 mb-2">Naskah Pertunjukan</div>
+                <h2 id="modal-title" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight"></h2>
+                
+                <div class="mt-2 space-y-1 text-xs text-slate-500">
+                    <p><strong class="text-slate-700">Sutradara:</strong> <span id="modal-director"></span></p>
+                    <p><strong class="text-slate-700">Production By:</strong> <span id="modal-production"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 space-y-5 border-t border-slate-100 pt-5">
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1.5 flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    Sinopsis Cerita
+                </h3>
+                <p id="modal-synopsis" class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line bg-slate-50 p-4 rounded-2xl border border-slate-100"></p>
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1.5 flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Daftar Pemain (Cast)
+                </h3>
+                <p id="modal-cast" class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line bg-slate-50 p-4 rounded-2xl border border-slate-100"></p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -145,13 +269,57 @@ function recalculateCart() {
     if (submitBtn) {
         if (totalQty > 0) {
             submitBtn.disabled = false;
-            submitBtn.className = "px-7 py-3.5 btn-gradient-primary rounded-xl font-semibold text-xs transition-all btn-touch cursor-pointer flex items-center gap-2";
+            submitBtn.className = "px-8 py-4 bg-slate-900 hover:bg-slate-800 text-amber-400 shadow-xl rounded-2xl font-bold text-sm transition-all btn-touch cursor-pointer flex items-center gap-2 active:scale-95";
         } else {
             submitBtn.disabled = true;
-            submitBtn.className = "px-7 py-3.5 bg-slate-200 text-slate-400 rounded-xl font-semibold text-xs transition-all btn-touch flex items-center gap-2 cursor-not-allowed";
+            submitBtn.className = "px-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm transition-all btn-touch flex items-center gap-2 cursor-not-allowed";
         }
     }
 }
+
+function openNaskahModal(id) {
+    const template = document.getElementById('naskah_data_' + id);
+    if (!template) return;
+    try {
+        const data = JSON.parse(template.innerHTML);
+        document.getElementById('modal-title').textContent = data.title;
+        document.getElementById('modal-director').textContent = data.director;
+        document.getElementById('modal-production').textContent = data.production_by;
+        document.getElementById('modal-synopsis').textContent = data.synopsis || 'Tidak ada sinopsis.';
+        document.getElementById('modal-cast').textContent = data.cast || 'Tidak ada data pemain.';
+
+        const posterImg = document.getElementById('modal-poster');
+        if (data.poster) {
+            posterImg.src = data.poster;
+            posterImg.style.display = 'block';
+        } else {
+            posterImg.style.display = 'none';
+        }
+
+        const modal = document.getElementById('naskah-modal');
+        const modalCard = document.getElementById('naskah-modal-card');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modalCard.classList.remove('scale-95');
+            modalCard.classList.add('scale-100');
+        }, 10);
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function closeNaskahModal() {
+    const modal = document.getElementById('naskah-modal');
+    const modalCard = document.getElementById('naskah-modal-card');
+    modal.classList.add('opacity-0');
+    modalCard.classList.remove('scale-100');
+    modalCard.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
 document.addEventListener('DOMContentLoaded', recalculateCart);
 </script>
 {% endblock %}

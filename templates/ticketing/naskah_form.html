@@ -1,0 +1,67 @@
+{% extends 'panel_base.html' %}
+
+{% block title %}{{ form_title }} — {{ event_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <a href="{% url 'ticketing:naskah_list' %}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium mb-4 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Kembali ke Daftar Naskah
+    </a>
+
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">{{ form_title }}</h1>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Judul Naskah *</label>
+                <input type="text" name="title" required value="{{ naskah.title|default:'' }}" placeholder="Contoh: Mengukir Mimpi" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Poster Gambar Naskah</label>
+                {% if naskah.poster %}
+                <div class="flex items-center gap-4 mb-3">
+                    <img src="{{ naskah.poster.url }}" alt="{{ naskah.title }}" class="w-16 h-24 object-cover rounded-xl border border-gray-200 shadow-sm">
+                    <span class="text-xs text-gray-500">Ganti poster dengan memilih file baru di bawah.</span>
+                </div>
+                {% endif %}
+                <input type="file" name="poster" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-all cursor-pointer">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Sinopsis Naskah</label>
+                <textarea name="synopsis" rows="5" placeholder="Tuliskan jalan cerita / sinopsis naskah..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all text-sm leading-relaxed">{{ naskah.synopsis|default:'' }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Pemain / Cast</label>
+                <textarea name="cast" rows="4" placeholder="Contoh: Mira diperankan oleh Talita tiara wati..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all text-sm leading-relaxed">{{ naskah.cast|default:'' }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Sutradara</label>
+                    <input type="text" name="director" value="{{ naskah.director|default:'R. Pujiono' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Production By</label>
+                    <input type="text" name="production_by" value="{{ naskah.production_by|default:'Teater Peace & Peace Forum' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Urutan Tampil</label>
+                <input type="number" name="order" value="{{ naskah.order|default:'1' }}" min="0" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all">
+            </div>
+
+            <div class="pt-4 flex items-center justify-end gap-3">
+                <a href="{% url 'ticketing:naskah_list' %}" class="px-5 py-3 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors">Batal</a>
+                <button type="submit" class="px-7 py-3 bg-primary-600 text-white rounded-xl text-sm font-semibold hover:bg-primary-700 shadow-md transition-all">Simpan Naskah</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

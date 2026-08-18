@@ -5,9 +5,31 @@ from django.db import models
 from django.db.models import Q
 
 
+class ShowScript(models.Model):
+    """Data naskah pertunjukan teater."""
+    title = models.CharField(max_length=150, verbose_name='Judul Naskah')
+    synopsis = models.TextField(blank=True, verbose_name='Sinopsis')
+    cast = models.TextField(blank=True, verbose_name='Pemain / Cast')
+    director = models.CharField(max_length=150, default='R. Pujiono', verbose_name='Sutradara')
+    production_by = models.CharField(max_length=150, default='Teater Peace & Peace Forum', verbose_name='Production By')
+    poster = models.ImageField(upload_to='posters/', blank=True, verbose_name='Poster Naskah')
+    order = models.PositiveIntegerField(default=0, verbose_name='Urutan Tampil')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'title']
+        verbose_name = 'Naskah Pertunjukan'
+        verbose_name_plural = 'Naskah Pertunjukan'
+
+    def __str__(self):
+        return self.title
+
+
 class TicketType(models.Model):
     """Season / jenis tiket (Season 1, Season 2, Season 3)."""
     name = models.CharField(max_length=100)
+    show_time = models.CharField(max_length=50, blank=True, verbose_name='Waktu Pertunjukan', help_text='Contoh: 08.30 - 11.30')
     price = models.DecimalField(max_digits=12, decimal_places=0, verbose_name='Harga 1 Tiket')
     bundle_price = models.DecimalField(
         max_digits=12, decimal_places=0,
@@ -16,6 +38,7 @@ class TicketType(models.Model):
     )
     quota = models.PositiveIntegerField()
     description = models.TextField(blank=True)
+    naskah_list = models.ManyToManyField(ShowScript, blank=True, related_name='ticket_types', verbose_name='Naskah yang Ditampilkan')
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

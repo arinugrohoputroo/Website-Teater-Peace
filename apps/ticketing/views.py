@@ -9,7 +9,7 @@ from apps.accounts.decorators import admin_required, module_required
 from apps.core.models import log_action
 from apps.payments.models import PaymentMethod
 
-from .models import Order, Ticket, TicketType
+from .models import Order, ShowScript, Ticket, TicketType
 from .services import (
     create_offline_order,
     delete_order,
@@ -288,11 +288,13 @@ def ticket_type_list(request):
 
 def _save_ticket_type(request, ticket_type=None):
     name = request.POST.get('name', '').strip()
+    show_time = request.POST.get('show_time', '').strip()
     price = request.POST.get('price', '').strip()
     bundle_price = request.POST.get('bundle_price', '').strip()
     quota = request.POST.get('quota', '').strip()
     description = request.POST.get('description', '').strip()
     active = request.POST.get('active') == 'on'
+    naskah_ids = request.POST.getlist('naskah_ids')
 
     if not name or not price or not bundle_price or not quota:
         messages.error(request, 'Nama, harga, bundling, dan kuota wajib diisi.')
@@ -314,12 +316,19 @@ def _save_ticket_type(request, ticket_type=None):
     if ticket_type is None:
         ticket_type = TicketType()
     ticket_type.name = name
+    ticket_type.show_time = show_time
     ticket_type.price = price_val
     ticket_type.bundle_price = bundle_val
     ticket_type.quota = quota_val
     ticket_type.description = description
     ticket_type.active = active
     ticket_type.save()
+
+    if naskah_ids:
+        ticket_type.naskah_list.set(ShowScript.objects.filter(id__in=naskah_ids))
+    else:
+        ticket_type.naskah_list.clear()
+
     return ticket_type
 
 
@@ -334,6 +343,8 @@ def ticket_type_add(request):
     return render(request, 'ticketing/ticket_type_form.html', {
         'form_title': 'Tambah Jenis Tiket',
         'ticket_type': None,
+        'all_naskah': ShowScript.objects.all(),
+        'selected_naskah_ids': [],
     })
 
 
@@ -346,9 +357,12 @@ def ticket_type_edit(request, pk):
             log_action(request.user, 'Edit Ticket Type', 'ticketing', saved.name, request=request)
             messages.success(request, f'Jenis tiket {saved.name} diperbarui.')
             return redirect('ticketing:ticket_types')
+    selected_ids = list(ticket_type.naskah_list.values_list('id', flat=True))
     return render(request, 'ticketing/ticket_type_form.html', {
         'form_title': 'Edit Jenis Tiket',
         'ticket_type': ticket_type,
+        'all_naskah': ShowScript.objects.all(),
+        'selected_naskah_ids': selected_ids,
     })
 
 
@@ -374,3 +388,87 @@ def ticket_type_delete(request, pk):
     log_action(request.user, 'Delete Ticket Type', 'ticketing', name, request=request)
     messages.success(request, f'{name} dihapus.')
     return redirect('ticketing:ticket_types')
+
+
+# ==========================================
+# Naskah Pertunjukan Admin CRUD
+# ==========================================
+
+@admin_required
+def naskah_list(request):
+    naskah = ShowScript.objects.all()
+    return render(request, 'ticketing/naskah_list.html', {'naskah_list': naskah})
+
+
+def _save_naskah(request, naskah=None):
+    title = request.POST.get('title', '').strip()
+    synopsis = request.POST.get('synopsis', '').strip()
+    cast = request.POST.get('cast', '').strip()
+    director = request.POST.get('director', '').strip() or 'R. Pujiono'
+    production_by = request.POST.get('production_by', '').strip() or 'Teater Peace & Peace Forum'
+    order_val = request.POST.get('order', '0').strip()
+
+    if not title:
+        messages.error(request, 'Judul Naskah wajib diisi.')
+        return False
+
+    try:
+        order_num = int(order_val)
+    except ValueError:
+        order_num = 0
+
+    if naskah is None:
+        naskah = ShowScript()
+
+    naskah.title = title
+    naskah.synopsis = synopsis
+    naskah.cast = cast
+    naskah.director = director
+    naskah.production_by = production_by
+    naskah.order = order_num
+
+    if request.FILES.get('poster'):
+        naskah.poster = request.FILES['poster']
+
+    naskah.save()
+    return naskah
+
+
+@admin_required
+def naskah_add(request):
+    if request.method == 'POST':
+        saved = _save_naskah(request)
+        if saved:
+            log_action(request.user, 'Add Naskah', 'ticketing', saved.title, request=request)
+            messages.success(request, f'Naskah "{saved.title}" berhasil ditambahkan.')
+            return redirect('ticketing:naskah_list')
+    return render(request, 'ticketing/naskah_form.html', {
+        'form_title': 'Tambah Naskah Pertunjukan',
+        'naskah': None,
+    })
+
+
+@admin_required
+def naskah_edit(request, pk):
+    naskah = get_object_or_404(ShowScript, pk=pk)
+    if request.method == 'POST':
+        saved = _save_naskah(request, naskah)
+        if saved:
+            log_action(request.user, 'Edit Naskah', 'ticketing', saved.title, request=request)
+            messages.success(request, f'Naskah "{saved.title}" berhasil diperbarui.')
+            return redirect('ticketing:naskah_list')
+    return render(request, 'ticketing/naskah_form.html', {
+        'form_title': 'Edit Naskah Pertunjukan',
+        'naskah': naskah,
+    })
+
+
+@admin_required
+@require_POST
+def naskah_delete(request, pk):
+    naskah = get_object_or_404(ShowScript, pk=pk)
+    title = naskah.title
+    naskah.delete()
+    log_action(request.user, 'Delete Naskah', 'ticketing', title, request=request)
+    messages.success(request, f'Naskah "{title}" telah dihapus.')
+    return redirect('ticketing:naskah_list')

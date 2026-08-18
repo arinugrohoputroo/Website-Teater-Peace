@@ -18,4 +18,10 @@ urlpatterns = [
     path('ticket-types/<int:pk>/edit/', views.ticket_type_edit, name='ticket_type_edit'),
     path('ticket-types/<int:pk>/toggle/', views.ticket_type_toggle, name='ticket_type_toggle'),
     path('ticket-types/<int:pk>/delete/', views.ticket_type_delete, name='ticket_type_delete'),
+
+    # Naskah management
+    path('naskah/', views.naskah_list, name='naskah_list'),
+    path('naskah/add/', views.naskah_add, name='naskah_add'),
+    path('naskah/<int:pk>/edit/', views.naskah_edit, name='naskah_edit'),
+    path('naskah/<int:pk>/delete/', views.naskah_delete, name='naskah_delete'),
 ]
