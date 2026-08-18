@@ -23,7 +23,7 @@ def get_max_tickets():
 
 
 
-def ticket_types_with_stats(*, active_only=False):
+def _fetch_ticket_types_with_stats(*, active_only=False):
     qs = TicketType.objects.annotate(
         sold=Count('tickets', filter=~Q(tickets__status=Ticket.Status.CANCELLED)),
     ).annotate(
@@ -36,6 +36,21 @@ def ticket_types_with_stats(*, active_only=False):
     if active_only:
         qs = qs.filter(active=True)
     return qs.order_by('name')
+
+
+def ticket_types_with_stats(*, active_only=False):
+    try:
+        return _fetch_ticket_types_with_stats(active_only=active_only)
+    except Exception as exc:
+        err_msg = str(exc).lower()
+        if 'no such column' in err_msg or 'no such table' in err_msg:
+            try:
+                from django.core.management import call_command
+                call_command('migrate', interactive=False)
+                return _fetch_ticket_types_with_stats(active_only=active_only)
+            except Exception:
+                pass
+        raise
 
 
 def get_quota_summary():
