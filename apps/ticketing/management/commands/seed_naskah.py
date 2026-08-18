@@ -1,3 +1,6 @@
+import os
+import shutil
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from apps.ticketing.models import ShowScript, TicketType
 
@@ -6,6 +9,20 @@ class Command(BaseCommand):
     help = 'Seed data naskah pertunjukan teater dan waktu pertunjukan season.'
 
     def handle(self, *args, **options):
+        # Copy poster images from static/posters to MEDIA_ROOT/posters
+        poster_src_dir = os.path.join(settings.BASE_DIR, 'static', 'posters')
+        poster_dst_dir = os.path.join(settings.MEDIA_ROOT, 'posters')
+        os.makedirs(poster_dst_dir, exist_ok=True)
+
+        if os.path.exists(poster_src_dir):
+            for f in os.listdir(poster_src_dir):
+                src_file = os.path.join(poster_src_dir, f)
+                if os.path.isfile(src_file):
+                    try:
+                        shutil.copy2(src_file, os.path.join(poster_dst_dir, f))
+                    except Exception:
+                        pass
+
         naskah_data = [
             {
                 'title': 'Mengukir Mimpi',
@@ -19,7 +36,7 @@ class Command(BaseCommand):
                 'cast': 'Evin Sesillia Jati sebagai Tri Indah Ayu Pertiwi',
                 'director': 'R. Pujiono',
                 'production_by': 'Teater Peace & Peace Forum',
-                'poster': 'posters/Poster Mengukir Mimpi.png',
+                'poster': 'posters/mengukir-mimpi.png',
                 'order': 1,
             },
             {
@@ -39,7 +56,7 @@ class Command(BaseCommand):
                 ),
                 'director': 'R. Pujiono',
                 'production_by': 'Teater Peace & Peace Forum',
-                'poster': 'posters/Poster Terlambat.jpg',
+                'poster': 'posters/terlambat.jpg',
                 'order': 2,
             },
             {
@@ -56,7 +73,7 @@ class Command(BaseCommand):
                 'cast': 'Adzra Aqilla Muhibba Sebagai Legimah',
                 'director': 'R. Pujiono',
                 'production_by': 'Teater Peace & Peace Forum',
-                'poster': 'posters/Poster Semuria.png',
+                'poster': 'posters/semuria.png',
                 'order': 3,
             },
             {
@@ -80,7 +97,7 @@ class Command(BaseCommand):
                 ),
                 'director': 'R. Pujiono',
                 'production_by': 'Teater Peace & Peace Forum',
-                'poster': 'posters/Poster Sulung.jpg',
+                'poster': 'posters/sulung.jpg',
                 'order': 4,
             },
             {
@@ -99,7 +116,7 @@ class Command(BaseCommand):
                 ),
                 'director': 'R. Pujiono',
                 'production_by': 'Teater Peace & Peace Forum',
-                'poster': 'posters/Poster Jago Kluruk.jpg',
+                'poster': 'posters/jago-kluruk.jpg',
                 'order': 5,
             },
         ]

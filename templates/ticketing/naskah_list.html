@@ -32,7 +32,7 @@
                 <tr class="hover:bg-gray-50/50 transition-colors">
                     <td class="px-4 py-3">
                         {% if naskah.poster %}
-                        <img src="{{ naskah.poster.url }}" alt="{{ naskah.title }}" class="w-14 h-20 object-cover rounded-lg shadow-sm border border-gray-200">
+                        <img src="{{ naskah.get_poster_url }}" alt="{{ naskah.title }}" class="w-14 h-20 object-cover rounded-lg shadow-sm border border-gray-200">
                         {% else %}
                         <div class="w-14 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-400 font-medium border border-gray-200">No Image</div>
                         {% endif %}

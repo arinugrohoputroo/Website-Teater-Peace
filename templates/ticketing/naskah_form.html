@@ -24,7 +24,7 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Poster Gambar Naskah</label>
                 {% if naskah.poster %}
                 <div class="flex items-center gap-4 mb-3">
-                    <img src="{{ naskah.poster.url }}" alt="{{ naskah.title }}" class="w-16 h-24 object-cover rounded-xl border border-gray-200 shadow-sm">
+                    <img src="{{ naskah.get_poster_url }}" alt="{{ naskah.title }}" class="w-16 h-24 object-cover rounded-xl border border-gray-200 shadow-sm">
                     <span class="text-xs text-gray-500">Ganti poster dengan memilih file baru di bawah.</span>
                 </div>
                 {% endif %}

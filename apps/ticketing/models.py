@@ -25,6 +25,25 @@ class ShowScript(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def get_poster_url(self):
+        if self.poster and hasattr(self.poster, 'url'):
+            try:
+                url = self.poster.url
+                if url:
+                    return url
+            except Exception:
+                pass
+        filename_map = {
+            'Mengukir Mimpi': 'mengukir-mimpi.png',
+            'Terlambat': 'terlambat.jpg',
+            'Semuria': 'semuria.png',
+            'Sulung': 'sulung.jpg',
+            'Jago Kluruk': 'jago-kluruk.jpg',
+        }
+        filename = filename_map.get(self.title, 'mengukir-mimpi.png')
+        return f'/static/posters/{filename}'
+
 
 class TicketType(models.Model):
     """Season / jenis tiket (Season 1, Season 2, Season 3)."""

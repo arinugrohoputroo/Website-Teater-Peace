@@ -8,8 +8,8 @@ def seed_naskah_and_seasons(apps, schema_editor):
     ShowScript = apps.get_model('ticketing', 'ShowScript')
     TicketType = apps.get_model('ticketing', 'TicketType')
 
-    # Copy poster images from repo's 'Poster Naskah' directory to MEDIA_ROOT/posters
-    poster_src_dir = os.path.join(settings.BASE_DIR, 'Poster Naskah')
+    # Copy poster images from static/posters to MEDIA_ROOT/posters
+    poster_src_dir = os.path.join(settings.BASE_DIR, 'static', 'posters')
     poster_dst_dir = os.path.join(settings.MEDIA_ROOT, 'posters')
     os.makedirs(poster_dst_dir, exist_ok=True)
 
@@ -35,7 +35,7 @@ def seed_naskah_and_seasons(apps, schema_editor):
             'cast': 'Evin Sesillia Jati sebagai Tri Indah Ayu Pertiwi',
             'director': 'R. Pujiono',
             'production_by': 'Teater Peace & Peace Forum',
-            'poster': 'posters/Poster Mengukir Mimpi.png',
+            'poster': 'posters/mengukir-mimpi.png',
             'order': 1,
         },
         {
@@ -55,7 +55,7 @@ def seed_naskah_and_seasons(apps, schema_editor):
             ),
             'director': 'R. Pujiono',
             'production_by': 'Teater Peace & Peace Forum',
-            'poster': 'posters/Poster Terlambat.jpg',
+            'poster': 'posters/terlambat.jpg',
             'order': 2,
         },
         {
@@ -72,7 +72,7 @@ def seed_naskah_and_seasons(apps, schema_editor):
             'cast': 'Adzra Aqilla Muhibba Sebagai Legimah',
             'director': 'R. Pujiono',
             'production_by': 'Teater Peace & Peace Forum',
-            'poster': 'posters/Poster Semuria.png',
+            'poster': 'posters/semuria.png',
             'order': 3,
         },
         {
@@ -96,7 +96,7 @@ def seed_naskah_and_seasons(apps, schema_editor):
             ),
             'director': 'R. Pujiono',
             'production_by': 'Teater Peace & Peace Forum',
-            'poster': 'posters/Poster Sulung.jpg',
+            'poster': 'posters/sulung.jpg',
             'order': 4,
         },
         {
@@ -115,7 +115,7 @@ def seed_naskah_and_seasons(apps, schema_editor):
             ),
             'director': 'R. Pujiono',
             'production_by': 'Teater Peace & Peace Forum',
-            'poster': 'posters/Poster Jago Kluruk.jpg',
+            'poster': 'posters/jago-kluruk.jpg',
             'order': 5,
         },
     ]

@@ -70,8 +70,8 @@
                 <div>
                     <!-- Poster Image -->
                     <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-sm relative mb-3 group-hover:shadow transition-all">
-                        {% if play.poster %}
-                        <img src="{{ play.poster.url }}" alt="{{ play.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        {% if play.get_poster_url %}
+                        <img src="{{ play.get_poster_url }}" alt="{{ play.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         {% else %}
                         <div class="w-full h-full flex items-center justify-center text-xs font-medium text-slate-400">Poster Naskah</div>
                         {% endif %}
@@ -102,7 +102,7 @@
                         "production_by": "{{ play.production_by|escapejs }}",
                         "synopsis": "{{ play.synopsis|escapejs }}",
                         "cast": "{{ play.cast|escapejs }}",
-                        "poster": "{% if play.poster %}{{ play.poster.url }}{% endif %}"
+                        "poster": "{{ play.get_poster_url|escapejs }}"
                     }
                 </template>
             </div>
